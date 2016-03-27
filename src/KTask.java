@@ -38,8 +38,8 @@ public class KTask {
      * Set the raster for the task.
      * @param raster The raster to add to the task
      */
-    public void setRaster(BadRaster r) {
-        raster = r;
+    public void setRaster(BadRaster raster) {
+        this.raster = raster;
     }
     /**
      * Get the raster from the task.
@@ -55,7 +55,7 @@ public class KTask {
      * @param width The width of the region of interest
      * @param height The height of the region of interest
      */
-    public void setRegion(int originX, int originY, int width, int h) {
+    public void setRegion(int originX, int originY, int width, int height) {
         startX = originX;
         startY = originY;
         this.width = width;

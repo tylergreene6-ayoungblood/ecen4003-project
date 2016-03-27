@@ -19,8 +19,8 @@ public class KKernel {
     /**
      * Creates a KKernel with a default kernel. The default kernel is an
      * identity matrix for image processing (zero everywhere except the center)
-     * @param width
-     * @param height
+     * @param width The width of the kernel
+     * @param height The Height of the kernel
      */
     public KKernel(int width, int height) {
         this.width = width;
@@ -96,6 +96,8 @@ public class KKernel {
     }
     /**
      * Get a component of the kernel at the specified position.
+     * @param x The x coordinate of the kernel component
+     * @param y The y coordinate of the kernel component
      * @return The specified component of the kernel
      */
     public float get(int x, int y) {
