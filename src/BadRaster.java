@@ -1,16 +1,20 @@
+/*
+ * Authors: Tyler Greene, Akira Youngblood
+ * Built for ECEN4003 Concurrent Programming
+ */
+
+ import java.io.*;
+ import javax.imageio.*;
+ import java.awt.image.BufferedImage;
+
 /**
  * A class representing a rectangular array of pixels. Far superior
  * to java.awt.image.Raster. A BadRaster encapsulates a three dimensional
  * dimensional pixel array that describes the particular raster frame.
  * <p>
- *
- *
+ * A BadRaster defines values for pixels occupying a rectangular area.
+ * The rectangle is bounded by (0,0) and (width,height).
  */
-
-import java.io.*;
-import javax.imageio.*;
-import java.awt.image.BufferedImage;
-
 public class BadRaster {
     /** The byte array of raster image data */
     protected float[][][] data;
@@ -30,6 +34,9 @@ public class BadRaster {
     /**
      * Creates a BadRaster with the given dimensions and sets all the
      * data to zero.
+     * @param bands  The number of bands (typically 3 for RGB)
+     * @param width  The width of the image
+     * @param height The height of the image
      */
     public BadRaster(int bands, int width, int height) {
         this.bands = (bands > 0) ? bands : 1;
@@ -38,36 +45,27 @@ public class BadRaster {
         data = new float[bands][width][height];
     }
     /**
-     * Load a raster from a filepath
+     * Load a raster from a filepath.
+     * @param path The filepath to load the image from. Should be a path to
+     * to an image
+     * @throws IOException if the file cannot be loaded
      */
     public void loadFromPath(String path) throws IOException {
         loadFromFile(new File(path));
     }
     /**
-     * Load a raster from a File object. This assumes a sane RGB image file.
+     * Load a raster from a File object.
+     * @param file The file to load. Should be an image
+     * @throws IOException if the file cannot be loaded
      */
     public void loadFromFile(File file) throws IOException {
-        // Get a buffered image and initialize the BadRaster fields
+        // Get a buffered image
         BufferedImage bufferedImage = ImageIO.read(file);
-        System.out.println("Type: " + bufferedImage.getType());
+        // Initialize the BadRaster fields
         this.bands = 3; // assume 3 bands (RGB)
         this.width = bufferedImage.getWidth();
         this.height = bufferedImage.getHeight();
         data = new float[bands][width][height];
-        /*
-        // Get the byte array out of a BufferedImage
-        WritableRaster raster = bufferedImage.getRaster();
-        DataBufferByte byteBuffer = (DataBufferByte)raster.getDataBuffer();
-        byte[] imageBytes = byteBuffer.getData();
-        // Move the byte array into the float array
-        for (int i = 0; i < bufferedImage.getWidth(); ++i) {
-            for (int j = 0; j < bufferedImage.getHeight(); ++j) {
-                data[0][i][j] =
-                data[1][i][j] =
-                data[2][i][j] =
-            }
-        }
-        */
         // Get the pixel data out of the BufferedImage and convert it to floats
         // RGB data is ordered [0,1,2] and scaled to [0,1]
         for (int i = 0; i < bufferedImage.getWidth(); ++i) {
@@ -79,13 +77,23 @@ public class BadRaster {
             }
         }
     }
-    // Write the raster to a file path
+    /**
+     * Write the raster to the specified filepath.
+     * @param path The path to write the image to
+     * @throws IOException if the file cannot be written
+     */
     public void writeToPath(String path) throws IOException {
         writeToFile(new File(path));
     }
-    // Write the raster to a file
+    /**
+     * Write the raster to the specified file.
+     * @param file The file to write the image to
+     * @throws IOException if the file cannot be written
+     */
     public void writeToFile(File file) throws IOException {
-        BufferedImage bufferedImage = new BufferedImage(width, height, 5);
+        // Get a BufferedImage
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+        // Write the data into the BufferedImage, pixel-by-pixel
         for (int i = 0; i < bufferedImage.getWidth(); ++i) {
             for (int j = 0; j < bufferedImage.getHeight(); ++j) {
                 int pixel = 0;
@@ -95,8 +103,14 @@ public class BadRaster {
                 bufferedImage.setRGB(j,i, pixel); // transpose
             }
         }
+        // Write the image to a file
         ImageIO.write(bufferedImage, "png", file);
     }
+    /**
+     * Return a string representation of a specified raster band.
+     * Do not call this on a large raster!
+     * @param band The band to display
+     */
     public String toString(int band) {
         String rv = String.format("BadRaster (band %d): (%dx%d)\n", band, width, height);
         for (int i = 0; i < width; ++i) {
@@ -106,5 +120,13 @@ public class BadRaster {
             rv += String.format("\n");
         }
         return rv;
+    }
+    /**
+     * Return a string representation of the entire raster.
+     * Bands are printed as separate sections, ordered RGB.
+     * Do not call this on a large raster!
+     */
+    public String toString() {
+        return toString(0) + toString(1) + toString(2);
     }
 }
