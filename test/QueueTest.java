@@ -69,7 +69,7 @@ public class QueueTest {
 		QueueTest queueTest = new QueueTest();
 		try {
 			queueTest.testParallel();
-			queueTest.queue.printList(); // print the list
+			queueTest.queue.print(); // print the queue
 		} catch (Exception e) {
 		}
 		long endTime = System.currentTimeMillis();
