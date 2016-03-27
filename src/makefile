@@ -9,7 +9,8 @@ CLASSES = \
 		Kernelizr.java \
 		KKernel.java \
 		KTask.java \
-		KOps.java
+		KOps.java \
+		BadRaster.java
 
 # help message by default
 .PHONY: default

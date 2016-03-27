@@ -1,65 +1,119 @@
-/****
+/*
  * KKernel.java
- ****
- * A Kernelizr static kernel object.
+ * Authors: Tyler Greene, Akira Youngblood
+ * Built for ECEN4003 Concurrent Programming
  */
 
-//package kernelizr;
-
-//import javax.imageio.*;
-//import java.io.*;
-//import java.awt.image.*;
-//import java.util.concurrent.*;
-
+/**
+ * A non-dynamic kernel, with floating point data. Kernels are small rectangular
+ * matrices describing an image filter. The dimensions should be mxn, where
+ * both m and n are odd numbers: m,n = 2k+1 for all k.
+ */
 public class KKernel {
-    private byte[][] kernel;
-    private int width, height;
+    /** The floating point kernel, a 2D array */
+    protected float[][] kernel;
+    /** The width of the kernel. */
+    protected int width;
+    /** The height of the kernel. */
+    protected int height;
+    /**
+     * Creates a KKernel with a default kernel. The default kernel is an
+     * identity matrix for image processing (zero everywhere except the center)
+     * @param width
+     * @param height
+     */
     public KKernel(int width, int height) {
         this.width = width;
         this.height = height;
-        kernel = new byte[width][height];
+        kernel = new float[width][height];
+        // Default "identity" matrix (one in the middle, zero elsewhere)
+        for (int i = 0; i < kernel.length; ++i)
+            for (int j = 0; j < kernel[i].length; ++j)
+                kernel[i][j] = 0.0f;
+        kernel[(int)Math.floor(width/2.0f)][(int)Math.floor(height/2.0f)] = 1.0f;
     }
-    // set a new kernel and normalize it
-    public void setKernel(byte[][] newKernel) {
+    /**
+     * Set new values for the kernel from a floating point array.
+     * @param newKernel The floating point data to update the kernel with.
+     * The dimensions of newKernel must match the existing kernel size.
+     */
+    public void setKernel(float[][] newKernel) {
         kernel = newKernel;
-        double sum = 0.0;
-        for (int i = 0; i < kernel.length; ++i) {
-            for (int j = 0; j < kernel[i].length; ++j) {
-                sum += kernel[i][j]/255.0;
-            }
-        }
-        for (int i = 0; i < kernel.length; ++i) {
-            for (int j = 0; j < kernel[i].length; ++j) {
-                kernel[i][j] = (byte)Math.round(kernel[i][j]*(255.0/sum));
-            }
-        }
     }
+    /**
+     * Set a specified element of the kernel
+     * @param x The x index to modify
+     * @param y The y index to modify
+     * @param value The value to set
+     */
+    public void set(int x, int y, float value) {
+        kernel[x][y] = value;
+    }
+    /**
+     * Normalize the kernel. Normalize ensures that the sum of the entire
+     * kernel is 1.
+     */
+    public void normalize() {
+        double sum = 0.0;
+        for (int i = 0; i < kernel.length; ++i)
+            for (int j = 0; j < kernel[i].length; ++j)
+                sum += kernel[i][j];
+        for (int i = 0; i < kernel.length; ++i)
+            for (int j = 0; j < kernel[i].length; ++j)
+                kernel[i][j] = (float)(kernel[i][j]/sum);
+    }
+    /**
+     * Get the width of the kernel.
+     * @return The width of the kernel
+     */
     public int getWidth() {
         return width;
     }
+    /**
+     * Get the height of the kernel.
+     * @return The height of the kernel
+     */
     public int getHeight() {
         return height;
     }
+    /**
+     * Get the "half-width" of the kernel, which is (width-1)/2.
+     * For sane kernels (which have an odd width), this is the number of pixels
+     * on each side of the center.
+     * @return The "half-width" of the kernel
+     */
     public int getHalfWidth() {
         return (width-1)/2;
     }
+    /**
+     * Get the "half-height" of the kernel, which is (height-1)/2.
+     * For sane kernels (which have an odd height), this is the number of pixels
+     * above and below the center
+     * @return The "half-height" of the kernel
+     */
     public int getHalfHeight() {
         return (height-1)/2;
     }
-    public int get(int x, int y) {
+    /**
+     * Get a component of the kernel at the specified position.
+     * @return The specified component of the kernel
+     */
+    public float get(int x, int y) {
         return kernel[x][y];
     }
-    // print the kernel as either raw byte values or scaled to 0..1.0
-    public void printKernel(boolean scaled) {
+    /**
+     * Return a string representation of the kernel. Values are scaled to [0,1],
+     * floating point.
+     * @return A string representation of the kernel
+     */
+    public String toString() {
+        String string = "";
         for (int i = 0; i < kernel.length; ++i) {
             for (int j = 0; j < kernel[i].length; ++j) {
-                if (scaled) {
-                    System.out.printf("%3d",kernel[i][j]);
-                } else {
-                    System.out.printf("%5.4f",kernel[i][j]/255.0);
-                }
+                string += String.format("%5.3f, ", kernel[i][j]);
             }
-            System.out.println();
+            string += String.format("\n");
         }
+        return string;
     }
 }

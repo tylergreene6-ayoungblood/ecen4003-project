@@ -1,16 +1,18 @@
-/****
+/*
  * Kernelizr.java
- ****
- * Processes an image with a multithreaded, dynamic kernel-
- * based filtering algorithm.
+ * Authors: Tyler Greene, Akira Youngblood
+ * Built for ECEN4003 Concurrent Programming
  */
 
-//package kernelizr;
+/**
+ * Processes an image with a multithreaded, dynamic kernel-based image
+ * filtering algorithm.
+ */
 
-import javax.imageio.*;
-import java.io.*;
-import java.awt.image.*;
-import java.util.concurrent.*;
+//import javax.imageio.*;
+//import java.io.*;
+//import java.awt.image.*;
+//import java.util.concurrent.*;
 
 public class Kernelizr {
     public static void main(String[] args) {
@@ -28,6 +30,46 @@ public class Kernelizr {
         // Set processing parameters
         final int blockSize = 64;
 
+        // Open the source image
+        BadRaster srcRaster = new BadRaster();
+        try {
+            srcRaster.loadFromPath("../test/datasets/image/rgb3x3.png");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        // Print the source raster data
+        System.out.println(srcRaster.toString());
+
+        // Create a kernel
+        KKernel kernel = new KKernel(3,3);
+        System.out.println(kernel.toString());
+
+        // Create a new raster
+        BadRaster destRaster = new BadRaster(srcRaster.getBands(),srcRaster.getWidth(),srcRaster.getHeight());
+
+        // Naive single-threaded image filtering (for testing)
+        for (int i = 0; i < srcRaster.getWidth(); ++i) {
+            for (int j = 0; j < srcRaster.getHeight(); ++j) {
+                float [] pixel = KOps.convolve2D(srcRaster, i, j, kernel);
+                //float [] pixel = {srcRaster.getPixelComponent(i,j,0),srcRaster.getPixelComponent(i,j,1),srcRaster.getPixelComponent(i,j,2)};
+                destRaster.setPixel(pixel, i, j);
+            }
+        }
+
+        // Print the destination raster data
+        System.out.println(destRaster.toString());
+
+        // Save the destination raster to a file
+        try {
+            destRaster.writeToPath("../test/rgb3x3_filtered.png");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return;
+        /*
         BufferedImage bImage = null;
         try {
             bImage = ImageIO.read(new File(args[0]));
@@ -48,7 +90,7 @@ public class Kernelizr {
                 // Get the kernel for this block
                 // Default to a 3x3 edge detection
                 KKernel kernel = new KKernel(3,3);
-                kernel.setKernel(new byte[][] {{0,1,0},{1,-4,1},{0,1,0}});
+                kernel.setKernel(new byte[][] {{0,63,0},{63,0,63},{0,63,0}});
                 KTask task = new KTask();
                 task.setKernel(kernel);
                 task.setRegion(i*blockSize,j*blockSize,blockSize,blockSize);
@@ -81,6 +123,6 @@ public class Kernelizr {
             e.printStackTrace();
             System.exit(1);
         }
-
+        */
     }
 }
