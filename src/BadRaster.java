@@ -1,4 +1,5 @@
 /*
+ * BadRaster.java
  * Authors: Tyler Greene, Akira Youngblood
  * Built for ECEN4003 Concurrent Programming
  */
@@ -107,26 +108,93 @@ public class BadRaster {
         ImageIO.write(bufferedImage, "png", file);
     }
     /**
-     * Return a string representation of a specified raster band.
+     * Set a pixel of the raster.
+     * @param pixel A float array. The length of the array should be the number
+     * of bands
+     * @param x     The x position of the pixel to set
+     * @param y     The y position of the pixel to set
+     */
+    public void setPixel(float [] pixel, int x, int y) {
+        for (int i = 0; i < bands; ++i)
+            data[i][x][y] = pixel[i];
+    }
+    /**
+     * Get a pixel of the raster. If the pixel requested is out of range, the
+     * returned value will be clamped to an edge pixel.
+     * @param x The x position of the pixel to get
+     * @param y The y position of the pixel to get
+     * @return An n-element float array, where n is the number of bands
+     */
+    public float [] getPixel(int x, int y) {
+        int xi = (x<0)?0:((x>=width)?width-1:x);
+        int yi = (y<0)?0:((y>=height)?height-1:y);
+        float [] pixel = new float[bands];
+        for (int i = 0; i < bands; ++i)
+            pixel[i] = data[i][xi][yi];
+        return pixel;
+    }
+    /**
+     * Get a pixel component. If the pixel component requested is out of range,
+     * the returned value will be clamped to an edge pixel component.
+     * @param x The x position of the pixel component to get
+     * @param y The y position of the pixel component to get
+     * @param b The band of the pixel to get
+     * @return The pixel component
+     */
+    public float getPixelComponent(int x, int y, int b) {
+        int xi = (x<0)?0:((x>=width)?width-1:x);
+        int yi = (y<0)?0:((y>=height)?height-1:y);
+        return data[b][xi][yi];
+    }
+    /**
+     * Get the image width
+     * @return The width of the image in pixels
+     */
+    public int getWidth() {
+        return width;
+    }
+    /**
+     * Get the image height
+     * @return The height of the image in pixels
+     */
+    public int getHeight() {
+        return height;
+    }
+    /**
+     * Get the number of bands in the raster.
+     * @return The number of bands
+     */
+    public int getBands() {
+        return bands;
+    }
+    /**
+     * Return a string representation of a specified raster band, as either
+     * the raw float data or scaled to unsigned byte values [0,255]
      * Do not call this on a large raster!
      * @param band The band to display
+     * @param toInt If set, print the values as integers instead of floats
+     * @return a string representation of the raster band
      */
-    public String toString(int band) {
+    public String toString(int band, boolean toByte) {
         String rv = String.format("BadRaster (band %d): (%dx%d)\n", band, width, height);
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
-                rv += String.format("%5.3f, ",data[band][i][j]);
+                if (toByte)
+                    rv += String.format("%3d ",(int)(255*data[band][i][j]));
+                else
+                    rv += String.format("%5.3f ",255*data[band][i][j]);
             }
             rv += String.format("\n");
         }
         return rv;
     }
     /**
-     * Return a string representation of the entire raster.
+     * Return a string representation of the entire raster, values as ints.
      * Bands are printed as separate sections, ordered RGB.
      * Do not call this on a large raster!
+     * @return a string representation of the entire raster
      */
     public String toString() {
-        return toString(0) + toString(1) + toString(2);
+        return toString(0,true) + toString(1,true) + toString(2,true);
     }
 }
