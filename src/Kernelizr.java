@@ -52,7 +52,7 @@ public class Kernelizr {
                 KTask task = new KTask();
                 task.setKernel(kernel);
                 task.setRegion(i*blockSize,j*blockSize,blockSize,blockSize);
-                task.setImageRaster(imageRaster);
+                task.setRaster(imageRaster);
                 taskQ.add(task);
             }
         }
@@ -62,5 +62,25 @@ public class Kernelizr {
             System.out.println(String.format("Block %5d: %s", index, t.getRegionString()));
             ++index;
         }
+        // Single-threaded task queue processing
+        WritableRaster filteredImageRaster = bImage.getRaster();
+        while (!taskQ.isEmpty()) {
+            KTask task = taskQ.poll();
+            for (int i = task.getX1(); i < task.getX2(); ++i) {
+                for (int j = task.getY1(); j < task.getY2(); ++j) {
+                    filteredImageRaster.setPixel(i,j,KOps.convolve2D(task.getRaster(),i,j,task.getKernel()));
+                }
+            }
+        }
+        // Save image
+        BufferedImage filteredImage = new BufferedImage(filteredImageRaster.getWidth(), filteredImageRaster.getHeight(), bImage.getType());
+        filteredImage.setData(filteredImageRaster);
+        try {
+            ImageIO.write(filteredImage, "png", new File("../test/out.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
     }
 }

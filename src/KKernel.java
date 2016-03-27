@@ -13,7 +13,7 @@
 
 public class KKernel {
     private byte[][] kernel;
-    public int width, height;
+    private int width, height;
     public KKernel(int width, int height) {
         this.width = width;
         this.height = height;
@@ -33,6 +33,21 @@ public class KKernel {
                 kernel[i][j] = (byte)Math.round(kernel[i][j]*(255.0/sum));
             }
         }
+    }
+    public int getWidth() {
+        return width;
+    }
+    public int getHeight() {
+        return height;
+    }
+    public int getHalfWidth() {
+        return (width-1)/2;
+    }
+    public int getHalfHeight() {
+        return (height-1)/2;
+    }
+    public int get(int x, int y) {
+        return kernel[x][y];
     }
     // print the kernel as either raw byte values or scaled to 0..1.0
     public void printKernel(boolean scaled) {

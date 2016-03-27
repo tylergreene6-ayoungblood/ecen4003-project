@@ -8,7 +8,8 @@ JFLAGS = -g -d $(BUILD_DIR) -Xlint:all
 CLASSES = \
 		Kernelizr.java \
 		KKernel.java \
-		KTask.java
+		KTask.java \
+		KOps.java
 
 # help message by default
 .PHONY: default
