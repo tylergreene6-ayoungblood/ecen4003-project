@@ -1,17 +1,34 @@
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+/*
+ * ProjectQueue.java
+ * Authors: Tyler Greene, Akira Youngblood
+ * Built for ECEN4003 Concurrent Programming
+ */
 
-public class ProjectQueue{
+import java.util.concurrent.locks.*;
+
+/**
+ * ProjectQueue is a concurrent task queue for managing tasks between concurrent
+ * threads.
+ */
+public class ProjectQueue {
+    /** Head node */
     private Node head;
+    /** Tail node */
     private Node tail;
-
+    /** Create an empty queue */
     public ProjectQueue(){
-        head = new Node();      //make head and tail and connect them to one another in the beginning
+        // Initialize head and tail
+        head = new Node();
         tail = new Node();
+        // Set empty queue
         head.next = tail;
         tail.next = null;
     }
-
+    /**
+     * Add a task to the the queue.
+     * @param item The item to add
+     * @return True if add was successful, false otherwise
+     */
     public boolean push(int item) {
         Node curr;
         Node next;
@@ -19,41 +36,44 @@ public class ProjectQueue{
         next = head.next;
         Node newNode = new Node();
         newNode.data = item;
-        curr.lock(); //add only needs one lock
+        curr.lock(); // add only needs one lock
         try {
-            if (validatePush(curr, next)) {     //make sure curr points to next
-                head.next = newNode;        //add new node to the front of the queue
+            if (validatePush(curr, next)) { //make sure curr points to next
+                head.next = newNode; //add new node to the front of the queue
                 newNode.next = next;
                 return true;
-            } else {            //if not return false
+            } else { // if not return false
                 return false;
             }
         } finally {
             curr.unlock();
         }
     }
-
+    /**
+     * Pop a task from the queue.
+     * @return The item popped
+     */
     public int pop() {
         Node pred;
         Node curr;
         Node next;
         pred = head;
         curr = head.next;
-        if(curr == tail){      //if curr = tail then we reached the end of the list
+        if (curr == tail) { // if curr = tail then we reached the end of the list
             return 0;
         }
         next = curr.next;
         pred.lock();
-        try{
+        try {
             curr.lock();
             try {
-                next.lock();    //lock the three locks and get rid of the middle one
+                next.lock(); // lock the three locks and get rid of the middle one
                 try {
                     if (validatePop(pred, curr, next)) {
-                        pred.next = next;   //connect pred to next skipping current
-                        return curr.data;   //curr prints its data
+                        pred.next = next; // connect pred to next skipping current
+                        return curr.data;
                     } else {
-                        return -1;      //if validate doesn't work return -1
+                        return -1; // if validate doesn't work return -1
                     }
                 } finally {
                     next.unlock();
@@ -65,16 +85,29 @@ public class ProjectQueue{
             pred.unlock();
         }
     }
-
+    /**
+     * Check if our push worked
+     * @param curr The current node
+     * @param next The next node
+     * @return True if push worked, false otherwise
+     */
     private boolean validatePush(Node curr, Node next) {
-        return (curr.next == next);     //does curr point to next
+        return (curr.next == next); // does curr point to next
     }
-
+    /**
+     * Check if our pop worked
+     * @param pred The preceding node
+     * @param curr The current node
+     * @param next The next node
+     * @return True if pop worked, false otherwise
+     */
     private boolean validatePop(Node pred, Node curr, Node next){
-        return (pred.next == curr && curr.next == next);    //does pred->curr->next
+        return (pred.next == curr && curr.next == next); // check pred->curr->next
     }
-
-    public void printList(){    //just a simple print list method
+    /**
+     * Print the contents of the queue
+     */
+    public void print() {
         int i = 0;
         Node temp;
         temp = head;
@@ -93,7 +126,6 @@ public class ProjectQueue{
         System.out.println("There are " + i + " items in the Queue");
         return;
     }
-
 }
 
 class Node{     //constructer
