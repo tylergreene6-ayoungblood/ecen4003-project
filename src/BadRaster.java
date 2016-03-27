@@ -172,7 +172,7 @@ public class BadRaster {
      * the raw float data or scaled to unsigned byte values [0,255]
      * Do not call this on a large raster!
      * @param band The band to display
-     * @param toInt If set, print the values as integers instead of floats
+     * @param toByte If set, print the values as integers instead of floats
      * @return a string representation of the raster band
      */
     public String toString(int band, boolean toByte) {
