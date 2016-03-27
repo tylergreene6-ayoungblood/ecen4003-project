@@ -15,7 +15,7 @@ CLASSES = \
 		KTask.java \
 		KOps.java \
 		BadRaster.java \
-		ProjectQueue.java
+		TaskQueue.java
 
 # help message by default
 .PHONY: default
@@ -51,6 +51,8 @@ jar: rebuild
 		jar cvfm ../Kernelizr.jar META-INF/MANIFEST.mf $(BUILD_DIR)/$(CLASSES:.java=.class)
 
 # test targets
-test-queue:
-		javac -g -Xlint:all -d $(BUILD_DIR)/queue ProjectQueue.java $(BUILD_DIR)/QueueTest.java
-		java -cp $(BUILD_DIR)/queue QueueTest
+test-queue-run:
+		javac -g -Xlint:all -d $(BUILD_DIR)/queue TaskQueue.java $(BUILD_DIR)/TaskQueueTest.java
+		java -cp $(BUILD_DIR)/queue TaskQueueTest
+test-queue-clean:
+		$(RM) $(BUILD_DIR)/queue/*.class

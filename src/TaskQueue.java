@@ -1,5 +1,5 @@
 /*
- * ProjectQueue.java
+ * TaskQueue.java
  * Authors: Tyler Greene, Akira Youngblood
  * Built for ECEN4003 Concurrent Programming
  */
@@ -7,35 +7,35 @@
 import java.util.concurrent.locks.*;
 
 /**
- * ProjectQueue is a concurrent task queue for managing tasks between concurrent
+ * TaskQueue is a concurrent task queue for managing tasks between concurrent
  * threads.
  */
-public class ProjectQueue {
+public class TaskQueue {
     /** Head node */
-    private Node head;
+    private TaskNode head;
     /** Tail node */
-    private Node tail;
+    private TaskNode tail;
     /** Create an empty queue */
-    public ProjectQueue(){
+    public TaskQueue(){
         // Initialize head and tail
-        head = new Node();
-        tail = new Node();
+        head = new TaskNode();
+        tail = new TaskNode();
         // Set empty queue
         head.next = tail;
         tail.next = null;
     }
     /**
      * Add a task to the the queue.
-     * @param item The item to add
+     * @param task The task to add
      * @return True if add was successful, false otherwise
      */
-    public boolean push(int item) {
-        Node curr;
-        Node next;
+    public boolean push(KTask task) {
+        TaskNode curr;
+        TaskNode next;
         curr = head;
         next = head.next;
-        Node newNode = new Node();
-        newNode.data = item;
+        TaskNode newNode = new TaskNode(task);
+        newNode.task = task;
         curr.lock(); // add only needs one lock
         try {
             if (validatePush(curr, next)) { //make sure curr points to next
@@ -51,16 +51,14 @@ public class ProjectQueue {
     }
     /**
      * Pop a task from the queue.
-     * @return The item popped
+     * @return The item popped. Return null on error
      */
-    public int pop() {
-        Node pred;
-        Node curr;
-        Node next;
+    public KTask pop() {
+        TaskNode pred, curr, next;
         pred = head;
         curr = head.next;
-        if (curr == tail) { // if curr = tail then we reached the end of the list
-            return 0;
+        if (curr == tail) { // if curr = tail then the queue is empty
+            return null;
         }
         next = curr.next;
         pred.lock();
@@ -71,9 +69,9 @@ public class ProjectQueue {
                 try {
                     if (validatePop(pred, curr, next)) {
                         pred.next = next; // connect pred to next skipping current
-                        return curr.data;
+                        return curr.task;
                     } else {
-                        return -1; // if validate doesn't work return -1
+                        return null; // if validate doesn't work return null
                     }
                 } finally {
                     next.unlock();
@@ -91,7 +89,7 @@ public class ProjectQueue {
      * @param next The next node
      * @return True if push worked, false otherwise
      */
-    private boolean validatePush(Node curr, Node next) {
+    private boolean validatePush(TaskNode curr, TaskNode next) {
         return (curr.next == next); // does curr point to next
     }
     /**
@@ -101,7 +99,7 @@ public class ProjectQueue {
      * @param next The next node
      * @return True if pop worked, false otherwise
      */
-    private boolean validatePop(Node pred, Node curr, Node next){
+    private boolean validatePop(TaskNode pred, TaskNode curr, TaskNode next){
         return (pred.next == curr && curr.next == next); // check pred->curr->next
     }
     /**
@@ -109,41 +107,56 @@ public class ProjectQueue {
      */
     public void print() {
         int i = 0;
-        Node temp;
+        TaskNode temp;
         temp = head;
-        while(temp != null){
-            if(temp == head){
+        while (temp != null) {
+            if (temp == head) {
                 System.out.println("[HEAD]");
-            } else if(temp == tail){
+            } else if (temp == tail) {
                 System.out.println("[TAIL]");
             } else {
-                System.out.println("  [ " + temp.data + " ] ");
+                System.out.println("  [ " + temp.task.getRegionString() + " ] ");
             }
             temp = temp.next;
             i++;
         }
         i -= 2;
-        System.out.println("There are " + i + " items in the Queue");
-        return;
+        System.out.println("There are " + i + " items in the queue.");
     }
 }
 
-class Node{     //constructer
-    public int data;
-    public Node next;
+/**
+ * TaskNode is a node for TaskQueue.
+ */
+class TaskNode {
+    public KTask task;
+    public TaskNode next;
     public Lock nodeLock = new ReentrantLock();
-
-    public Node(){
+    /**
+     * Create an empty TaskNode.
+     */
+    public TaskNode() {
         next = null;
-        data = 0;
+        this.task = null;
     }
-
+    /**
+     * Create an TaskNode from a Task.
+     * @param task The task to associate with the node.
+     */
+    public TaskNode(KTask task) {
+        next = null;
+        this.task = task;
+    }
+    /**
+     * Lock the node
+     */
     public void lock() {
         nodeLock.lock();
     }
-
+    /**
+     * Unlock the node
+     */
     public void unlock(){
         nodeLock.unlock();
     }
-
 }
