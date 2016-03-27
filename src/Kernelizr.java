@@ -34,15 +34,21 @@ public class Kernelizr {
         BadRaster srcRaster = new BadRaster();
         try {
             srcRaster.loadFromPath("../test/datasets/image/rgb3x3.png");
+            srcRaster.loadFromPath("../test/datasets/image/103-menger-3840x2160-2_cropped_640x640.png");
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
         // Print the source raster data
-        System.out.println(srcRaster.toString());
+        //System.out.println(srcRaster.toString());
+        // Print the source image dimensions
+        System.out.printf("Loaded image. Dimensions: %dx%d\n",srcRaster.getWidth(),srcRaster.getHeight());
 
         // Create a kernel
         KKernel kernel = new KKernel(3,3);
+        kernel.setKernel(new float [][] {{1/16.0f,2/16.0f,1/16.0f},{2/16.0f,4/16.0f,2/16.0f},{1/16.0f,2/16.0f,1/16.0f}});
+        kernel.setKernel(new float [][] {{-1,-1,-1},{-1,8,-1},{-1,-1,-1}});
+
         System.out.println(kernel.toString());
 
         // Create a new raster
@@ -58,7 +64,9 @@ public class Kernelizr {
         }
 
         // Print the destination raster data
-        System.out.println(destRaster.toString());
+        //System.out.println(destRaster.toString());
+        // Print the new image dimensions
+        System.out.printf("Saving image. Dimensions: %dx%d\n",destRaster.getWidth(),destRaster.getHeight());
 
         // Save the destination raster to a file
         try {
