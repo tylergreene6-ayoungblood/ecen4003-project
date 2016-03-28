@@ -19,7 +19,7 @@ public class Pixel {
      * Creates a Pixel with the default 3 bands and sets all data to zero.
      */
     public Pixel() {
-        Pixel(3);
+        this(3);
     }
     /**
      * Creates a pixel with an arbitrary number of bands and sets all data
@@ -52,7 +52,15 @@ public class Pixel {
      * @param value The value to set
      */
     public void set(int band, float value) {
-        p[band] = values;
+        p[band] = value;
+    }
+    /**
+     * Set a pixel from float data.
+     * @param values The float data. Must have at least as many elements as
+     * the pixel has bands.
+     */
+    public void set(float[] values) {
+        for (int i = 0; i < bands; ++i) p[i] = values[i];
     }
     /**
      * Set the RGB components of a pixel (assumed to be bands 0,1,2)
@@ -116,7 +124,7 @@ public class Pixel {
      * @param g The green value
      */
     public void g(float g) {
-        p[1] = r;
+        p[1] = g;
     }
     /**
      * Set the blue component of the pixel (assumed to be band 2)
@@ -131,5 +139,13 @@ public class Pixel {
      */
     public void a(float a) {
         p[3] = a;
+    }
+    /**
+     * Add a value to a given band
+     * @param band The band to modify
+     * @param v The value to add
+     */
+    public void add(int band, float value) {
+        p[band] += value;
     }
 }

@@ -20,11 +20,13 @@ public class BaseKernel extends Kernel {
     public BaseKernel(JSONKernel jKernel) {
         this.width = jKernel.width;
         this.height = jKernel.height;
-        kernel = new float[width][height];
+        this.depth = jKernel.depth;
+        kernel = new float[width][height][depth];
         this.name = jKernel.name;
         for (int i = 0; i < this.width; ++i)
             for (int j = 0; j < this.height; ++j)
-                kernel[i][j] = jKernel.kernel[i][j] * jKernel.coeff;
+                for (int k = 0; k < this.depth; ++k)
+                    kernel[i][j][k] = jKernel.kernel[k][i][j] * jKernel.coeff;
     }
     /**
      * Creates a BaseKernel from a path to a kernel in JSON format.
@@ -38,6 +40,7 @@ public class BaseKernel extends Kernel {
      * @param point An xy coordinate, normalized to [0,1]
      * @return A modulated and trimmed kernel
      */
+    /*
     public Kernel getModulatedKernel(float [] point) {
         float scale = 1.0f/(point[0]*80 + point[1]*40);
         //System.out.println(scale);
@@ -82,4 +85,5 @@ public class BaseKernel extends Kernel {
         }
         return newKernel;
     }
+    */
 }

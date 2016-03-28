@@ -21,58 +21,60 @@ public final class KOps {
     }
     /**
      * Convolves a given pixel with a kernel.
-     * @param raster The source raster.
-     * @param x The x coordinate to center around.
-     * @param y The y coordinate to center around.
+     * @param rasters A raster array.
+     * @param x The X coordinate to center around.
+     * @param y The Y coordinate to center around.
+     * @param z The Z coordinate to center around.
      * @param kernel The kernel to convolve the source raster with.
      * @return A n-band float vector representing a pixel, where n is
      * the number of bands.
      */
-    public static float[] convolve2D(BadRaster raster, int x, int y, Kernel kernel) {
+    public static Pixel convolve3D(BadRaster[] rasters, int x, int y, int z, Kernel kernel) {
         int hw = kernel.getHalfWidth();
         int hh = kernel.getHalfHeight();
-        float [] newPixel = new float[raster.getBands()];
+        int hd = kernel.getHalfDepth();
+        Pixel pixel = new Pixel(rasters[0].getBands());
         // iterate through bands
-        for (int b = 0; b < raster.getBands(); ++b) {
+        for (int b = 0; b < rasters[0].getBands(); ++b) {
             // iterate through kernel
-            for (int i = 0; i < kernel.getWidth(); ++i) {
-                for (int j = 0; j < kernel.getHeight(); ++j) {
-                    int xi = x - hw + i;
-                    int yi = y - hh + j;
-                    newPixel[b] += kernel.get(i, j) * raster.getPixelComponent(xi,yi,b);
+            for (int k = 0; k < kernel.getHeight(); ++k) {
+                for (int i = 0; i < kernel.getWidth(); ++i) {
+                    for (int j = 0; j < kernel.getHeight(); ++j) {
+                        int xi = x - hw + i;
+                        int yi = y - hh + j;
+                        int zi = z - hd + k;
+                        pixel.add(b, kernel.get(i, j, k) * rasters[zi].getPixelComponent(xi,yi,b));
+                    }
                 }
             }
         }
-        return newPixel;
+        return pixel;
     }
     /**
-     * Returns a four-element boolean array indicate which edges of the
-     * passed array are less than a threshold. Ordered [top,right,bottom,left]
+     * Returns a six-element boolean array indicate which side of the
+     * passed array are all less (absolute value) than a threshold. Ordered
+     * [top,right,bottom,left,front,back].
      * @param kernel A kernel in raw floating point format
      * @param threshold The threshold to compare against.
      * @return A boolean array indicate which sides are all below the threshold.
      */
-    public static boolean[] edgeCheck(float[][] kernel, float threshold) {
-        boolean [] edges = new boolean[4];
-        int width = kernel.length;
-        int height = kernel[0].length;
+    public static boolean[] sideCheck(float[][][] kernel, float threshold) {
+        boolean [] edges = new boolean[6];
+        int w = kernel.length;
+        int h = kernel[0].length;
+        int d = kernel[0][0].length;
         float t = threshold;
-        // Check top edge (j = 0)
-        edges[0] = true;
-        for (int i = 0; i < width; ++i) if (kernel[i][0] > t || kernel[i][0] < -t) edges[0] = false;
-        // check bottom edge (j = height-1)
-        edges[2] = true;
-        for (int i = 0; i < width; ++i) if (kernel[i][height-1] > t || kernel[i][height-1] < -t) edges[2] = false;
-        // check right edge (i = width-1)
-        edges[1] = true;
-        for (int j = 0; j < height; ++j) if (kernel[width-1][j] > t || kernel[width-1][j] < -t) edges[1] = false;
-        // check left edge (i = 0)
-        edges[3] = true;
-        for (int j = 0; j < height; ++j) if (kernel[0][j] > t || kernel[0][j] < -t) edges[3] = false;
+        System.out.println("KOps.sideCheck() unimplemented!");
+        edges[0] = false;
+        edges[1] = false;
+        edges[2] = false;
+        edges[3] = false;
+        edges[4] = false;
+        edges[5] = false;
         return edges;
     }
     /**
-     * Returns the sum of a kernel. Utility method.
+     * Returns the sum of a 2D kernel. Utility method.
      * @param kernel A two-dimensional array to be summed
      * @return The sum of the array
      */
@@ -81,6 +83,19 @@ public final class KOps {
         for (int i = 0; i < kernel.length; ++i)
             for (int j = 0; j < kernel[0].length; ++j)
                 sum += kernel[i][j];
+        return sum;
+    }
+    /**
+     * Returns the sum of a 3D kernel. Utility method.
+     * @param kernel A three-dimensional array to be summed
+     * @return The sum of the array
+     */
+    public static double sum(float[][][] kernel) {
+        double sum = 0.0f;
+        for (int i = 0; i < kernel.length; ++i)
+            for (int j = 0; j < kernel[0].length; ++j)
+                for (int k = 0; k < kernel[0][0].length; ++k)
+                    sum += kernel[i][j][k];
         return sum;
     }
     /**

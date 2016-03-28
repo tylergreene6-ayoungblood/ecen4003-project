@@ -34,7 +34,8 @@ public class KWorker implements Runnable {
         for (int i = 0; i < task.getWidth(); ++i) {
             for (int j = 0; j < task.getHeight(); ++j) {
                 // convolve and get the pixel value for this coordinate
-                float [] pixel = KOps.convolve2D(task.getInputRaster(), task.getOriginX() + i, task.getOriginY() + j, task.getKernel());
+                Pixel pixel = new Pixel();
+                //Pixel pixel = KOps.convolve3D(task.getInputRaster(), task.getOriginX() + i, task.getOriginY() + j, task.getKernel());
                 // write the pixel value back to the destination raster
                 task.getOutputRaster().setPixel(pixel, task.getOriginX() + i, task.getOriginY() + j);
             }

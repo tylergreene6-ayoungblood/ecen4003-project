@@ -35,6 +35,8 @@ public class BadRaster {
     protected int width;
     /** The height of the raster (the "y" dimension) */
     protected int height;
+    /** A string with the filename */
+    protected String filename = "";
 
     /**
      * Creates a BadRaster and leaves it uninitialized.
@@ -70,6 +72,7 @@ public class BadRaster {
      * @throws IOException if the file cannot be loaded
      */
     public void loadFromFile(File file) throws IOException {
+        filename = file.getName();
         // Get a buffered image
         BufferedImage bufferedImage = ImageIO.read(file);
         // Initialize the BadRaster fields
@@ -81,7 +84,7 @@ public class BadRaster {
         // RGB data is ordered [0,1,2] and scaled to [0,1]
         for (int i = 0; i < bufferedImage.getWidth(); ++i) {
             for (int j = 0; j < bufferedImage.getHeight(); ++j) {
-                int pixel = bufferedImage.getRGB(j,i); // transpose
+                int pixel = bufferedImage.getRGB(i,j);
                 data[0][i][j] = ((pixel & 0xff0000) >> 16)/255.0f; // red
                 data[1][i][j] = ((pixel & 0xff00) >> 8)/255.0f; // green
                 data[2][i][j] = (pixel & 0xff)/255.0f; // blue
@@ -111,7 +114,7 @@ public class BadRaster {
                 pixel |= (int)(data[0][i][j]*255) << 16; // red
                 pixel |= (int)(data[1][i][j]*255) << 8; // green
                 pixel |= (int)(data[2][i][j]*255); // blue
-                bufferedImage.setRGB(j,i, pixel); // transpose
+                bufferedImage.setRGB(i,j, pixel);
             }
         }
         // Write the image to a file
@@ -127,6 +130,17 @@ public class BadRaster {
     public void setPixel(float [] pixel, int x, int y) {
         for (int i = 0; i < bands; ++i)
             data[i][x][y] = pixel[i];
+    }
+    /**
+     * Set a pixel of the raster.
+     * @param pixel A Pixel. The number of bands in the Pixel should
+     * math the number of bands of the BadRaster.
+     * @param x     The x position of the pixel to set
+     * @param y     The y position of the pixel to set
+     */
+    public void setPixel(Pixel pixel, int x, int y) {
+        for (int i = 0; i < bands; ++i)
+            data[i][x][y] = pixel.get(i);
     }
     /**
      * Set a pixel component of the raster.
@@ -216,5 +230,12 @@ public class BadRaster {
      */
     public String toString() {
         return toString(0,true) + toString(1,true) + toString(2,true);
+    }
+    /**
+     * Get the filename (set when the raster was loaded from a file)
+     * @return The filename
+     */
+    public String getFilename() {
+        return filename;
     }
 }

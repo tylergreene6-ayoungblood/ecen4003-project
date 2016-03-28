@@ -5,6 +5,8 @@
  */
 
 import java.util.concurrent.*;
+import java.io.*;
+import java.util.ArrayList;
 
 /**
  * Processes an image with a multithreaded, dynamic kernel-based image
@@ -13,25 +15,88 @@ import java.util.concurrent.*;
 public class Kernelizr {
     /**
      * The main method of Kernelizr. Handles the higher-level process:<br>
-     * - loads an image file<br>
-     * - kicks off the image processing<br>
-     * - saves the image to a file<br>
+     * - load a series of images<br>
+     * - load a specified kernel, or use the default<br>
+     * - start a thread pool for processing<br>
+     * - save the images to a path<br>
      * @param args The command-line args for the main program.
      */
     public static void main(String[] args) {
-        System.out.println("\nHello, I'm Kernelizr, an image filter.");
+        // Argument parsing and validation -------------------------------------
+        System.out.printf("\nHello, I'm Kernelizr, an image filter.\n");
         // The first argument should be a path to an image file.
         // If it is not, complain. Otherwise, try to open it
-        if (args.length < 1) {
-            System.out.println("No image path provided.");
-            System.out.println("Usage:");
-            System.out.println("    java Kernelizr image_path [kernel_path]");
-            System.out.println("    ");
-            return;
+        final String searchPath;
+        if (args.length >= 1) {
+            searchPath = args[0];
+        } else {
+            searchPath = "../test/datasets/timeseries/mdb_render/";
+            System.out.printf("WARN: No timeseries path provided. Using default %s\n", searchPath);
         }
+        final String outputPath;
+        if (args.length >= 2) {
+            outputPath = args[1];
+        } else {
+            outputPath = "../test/output/";
+            System.out.printf("WARN: No output path provided. Using default %s\n", outputPath);
+        }
+        final String kernelPath;
+        if (args.length >= 3) {
+            kernelPath = args[2];
+        } else {
+            kernelPath = "../test/kernels/gaussianblur_7x7.json";
+            System.out.printf("WARN: No kernel path provided. Using default %s\n", kernelPath);
+        }
+        // Search for *.png files in the specified directory and add them to
+        // the list of files we care about
+        File searchDir = new File(searchPath);
+        File[] searchFiles = searchDir.listFiles();
+        ArrayList<File> srcFiles = new ArrayList<File>();
+        for (int i = 0; i < searchFiles.length; i++) {
+            if (searchFiles[i].isFile() && searchFiles[i].getName().endsWith(".png")) {
+                srcFiles.add(searchFiles[i]);
+            }
+        }
+        System.out.printf("Found %d files in %s\n",srcFiles.size(),searchPath);
+        // Load the base kernel
+        BaseKernel baseKernel = new BaseKernel(kernelPath);
+        System.out.printf("Using kernel: %s, sum: %f\n",baseKernel.name,KOps.sum(baseKernel.getKernel()));
+
+        // Iterate through the files and load into a BadRaster array
+        ArrayList<BadRaster> srcRasters = new ArrayList<BadRaster>();
+        for (File file : srcFiles) {
+            BadRaster raster = new BadRaster();
+            try {
+                System.out.println("Loading " + file.getName());
+                raster.loadFromFile(file);
+                srcRasters.add(raster);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("ERROR: Failed to open source image: " + file.getName());
+                System.exit(1);
+            }
+        }
+
+        // Save the rasters to files
+        for (BadRaster raster : srcRasters) {
+            System.out.println("Saving " + raster.getFilename());
+            try {
+                raster.writeToPath(outputPath + raster.getFilename());
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+
+        /*
         if (args.length < 2) {
             System.out.println("No kernel path provided. Using default kernel.");
         }
+        */
+        // Get an array of file handles ----------------------------------------
+
+        return;
+        /*
         // Set processing parameters -------------------------------------------
         // blockSize is the size in pixels of each block associated with a task
         final int blockSize = 8;
@@ -79,8 +144,9 @@ public class Kernelizr {
                 KTask task = new KTask(i*blockSize,j*blockSize,blockSize,blockSize);
                 task.setInputRaster(srcRaster);
                 task.setOutputRaster(destRaster);
-                Kernel kernel = baseKernel.getModulatedKernel(point);
-                task.setKernel(kernel);
+                //Kernel kernel = baseKernel.getModulatedKernel(point);
+                //task.setKernel(kernel);
+                task.setKernel(baseKernel);
                 tasks.push(task);
                 //System.out.println("Pushed task: " + task.getRegionString() + " w/ modulation: [" + point[0] + "," + point[1] + "]");
                 ++nBlocks;
@@ -113,5 +179,6 @@ public class Kernelizr {
             e.printStackTrace();
             System.exit(1);
         }
+        */
     }
 }

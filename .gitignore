@@ -9,6 +9,7 @@
 
 # Ignore output image files
 test/*.png
+test/output/
 
 # JVM crash logs
 hs_err_pid*

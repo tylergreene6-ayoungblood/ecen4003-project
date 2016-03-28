@@ -5,17 +5,20 @@
  */
 
 /**
- * A non-dynamic kernel, with floating point data. Kernels are small rectangular
- * matrices describing an image filter. The dimensions should be mxn, where
- * both m and n are odd numbers: m,n = 2k+1 for all k.
+ * A non-dynamic, three-dimensional kernel, with floating point data.
+ * A kernel is a 3D convolution matrix that describes a filtering algorithm
+ * on a 3D dataset. The dimensions should be mxnxp, where m, n, and p
+ * are odd numbers: m,n,p = 2k+1 for all k.
  */
 public class Kernel {
-    /** The floating point kernel, a 2D array */
-    protected float[][] kernel;
-    /** The width of the kernel. */
+    /** The floating point kernel, a 3D array */
+    protected float[][][] kernel;
+    /** The width (X dimension) of the kernel. */
     protected int width;
-    /** The height of the kernel. */
+    /** The height (Y dimension) of the kernel. */
     protected int height;
+    /** The depth (Z dimension) of the kernel. */
+    protected int depth;
     /**
      * An empty no-arg constructor. Necessary for subclasses to do their thing.
      */
@@ -26,54 +29,68 @@ public class Kernel {
      * Creates a Kernel with a default kernel. The default kernel is an
      * identity matrix for image processing (zero everywhere except the center)
      * @param width The width of the kernel
-     * @param height The Height of the kernel
+     * @param height The height of the kernel
+     * @param depth The depth of the kernel
      */
-    public Kernel(int width, int height) {
+    public Kernel(int width, int height, int depth) {
         this.width = width;
         this.height = height;
-        kernel = new float[width][height];
+        this.depth = depth;
+        kernel = new float[width][height][depth];
         // Default "identity" matrix (one in the middle, zero elsewhere)
-        for (int i = 0; i < kernel.length; ++i)
-            for (int j = 0; j < kernel[i].length; ++j)
-                kernel[i][j] = 0.0f;
-        kernel[(int)Math.floor(width/2.0f)][(int)Math.floor(height/2.0f)] = 1.0f;
+        for (int i = 0; i < width; ++i)
+            for (int j = 0; j < height; ++j)
+                for (int k = 0; k < depth; ++k)
+                    kernel[i][j][k] = 0.0f;
+        kernel[(int)Math.floor(width/2.0f)][(int)Math.floor(height/2.0f)][(int)Math.floor(depth/2.0f)] = 1.0f;
     }
     /**
-     * Set new values for the kernel from a floating point array.
-     * @param newKernel The floating point data to update the kernel with.
+     * Set new values for the kernel from a 3D array.
+     * @param newKernel The new kernel data to update the kernel with.
      * The dimensions of newKernel must match the existing kernel size.
      */
-    public void setKernel(float[][] newKernel) {
+    public void setKernel(float[][][] newKernel) {
         kernel = newKernel;
     }
     /**
-     * Get the raw kernel data as a floating point array.
+     * Get the raw kernel data as a 3D array.
      @return The internal kernel array
      */
-    public float[][] getKernel() {
+    public float[][][] getKernel() {
         return kernel;
     }
     /**
      * Set a specified element of the kernel
      * @param x The x index to modify
      * @param y The y index to modify
+     * @param z The z index to modify
      * @param value The value to set
      */
-    public void set(int x, int y, float value) {
-        kernel[x][y] = value;
+    public void set(int x, int y, int z, float value) {
+        kernel[x][y][z] = value;
+    }
+    /**
+     * Get a component of the kernel at the specified position.
+     * @param x The X coordinate of the kernel component
+     * @param y The Y coordinate of the kernel component
+     * @param z The Z coordinate of the kernel component
+     * @return The specified component of the kernel
+     */
+    public float get(int x, int y, int z) {
+        return kernel[x][y][z];
     }
     /**
      * Normalize the kernel. Normalize ensures that the sum of the entire
-     * kernel is 1.
+     * kernel is 1, which is nice when doing certain image filtering operations
+     * such as blurring or sharpening (normalized kernels ensure the overall
+     * brightness of the image stays mostly constant).
      */
     public void normalize() {
-        double sum = 0.0;
-        for (int i = 0; i < kernel.length; ++i)
-            for (int j = 0; j < kernel[i].length; ++j)
-                sum += kernel[i][j];
-        for (int i = 0; i < kernel.length; ++i)
-            for (int j = 0; j < kernel[i].length; ++j)
-                kernel[i][j] = (float)(kernel[i][j]/sum);
+        double sum = KOps.sum(kernel);
+        for (int i = 0; i < width; ++i)
+            for (int j = 0; j < height; ++j)
+                for (int k = 0; k < depth; ++j)
+                    kernel[i][j][k] = (float)(kernel[i][j][k]/sum);
     }
     /**
      * Get the width of the kernel.
@@ -88,6 +105,13 @@ public class Kernel {
      */
     public int getHeight() {
         return height;
+    }
+    /**
+     * Get the depth of the kernel.
+     * @return The depth of the kernel
+     */
+    public int getDepth() {
+        return depth;
     }
     /**
      * Get the "half-width" of the kernel, which is (width-1)/2.
@@ -108,24 +132,39 @@ public class Kernel {
         return (height-1)/2;
     }
     /**
-     * Get a component of the kernel at the specified position.
-     * @param x The x coordinate of the kernel component
-     * @param y The y coordinate of the kernel component
-     * @return The specified component of the kernel
+     * Get the "half-depth" of the kernel, which is (depth-1)/2.
+     * For sane kernels (which have an odd depth), this is the number of pixels
+     * above and below the center
+     * @return The "half-depth" of the kernel
      */
-    public float get(int x, int y) {
-        return kernel[x][y];
+    public int getHalfDepth() {
+        return (depth-1)/2;
     }
     /**
-     * Return a string representation of the kernel. Values are scaled to [0,1],
-     * floating point.
+     * Return a string representation of the kernel, using the raw float values.
      * @return A string representation of the kernel
      */
     public String toString() {
+        return toString(false);
+    }
+    /**
+     * Return a string representation of the kernel, as either raw float values
+     * or values scaled to byte range ([-1,1] corresponds to [-127,127])
+     * @param asBytes If true, scale the kernel values to signed byte range
+     * @return A string representation of the kernel
+     */
+    public String toString(boolean asBytes) {
         String string = "";
-        for (int i = 0; i < kernel.length; ++i) {
-            for (int j = 0; j < kernel[i].length; ++j) {
-                string += String.format("%5.3f, ", kernel[i][j]);
+        for (int k = 0; k < depth; ++k) {
+            for (int i = 0; i < width; ++i) {
+                for (int j = 0; j < height; ++j) {
+                    if (asBytes) {
+                        string += String.format("%4d,", (byte)(kernel[i][j][k]*127));
+                    } else {
+                        string += String.format("%5.3f, ", kernel[i][j][k]);
+                    }
+                }
+                string += String.format("\n");
             }
             string += String.format("\n");
         }
