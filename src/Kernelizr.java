@@ -28,29 +28,31 @@ public class Kernelizr {
         }
         // Set processing parameters -------------------------------------------
         // blockSize is the size in pixels of each block associated with a task
-        final int blockSize = 32;
+        final int blockSize = 8;
         // nThreads is the (supposedly optimal) number of threads to run in
         // the thread pool. Determined by number of processors.
         final int nThreads = Runtime.getRuntime().availableProcessors();
         // Path to save the image
         final String destinationPath = "../test/output.png";
         // Path to base kernel
-        final String baseKernelPath = "../test/kernels/gaussianblur_7x7.json";
+        final String baseKernelPath = "../test/kernels/quadraticcross_11x11.json";
+
 
         // Load the source image into a raster
         BadRaster srcRaster = new BadRaster();
         try {
             //srcRaster.loadFromPath(args[0])
             //srcRaster.loadFromPath("../test/datasets/image/rgb3x3.png");
-            //srcRaster.loadFromPath("../test/datasets/image/103-menger-3840x2160-2_cropped_640x640.png");
+            srcRaster.loadFromPath("../test/datasets/image/103-menger-3840x2160-2_cropped_640x640.png");
             //srcRaster.loadFromPath("../test/datasets/image/hw8_z2_20150819T060000_640x640.png");
-            srcRaster.loadFromPath("../test/datasets/image/pattern_128x128.png");
+            //srcRaster.loadFromPath("../test/datasets/image/pattern_128x128.png");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("ERROR: Failed to open source image.");
             System.exit(1);
         }
         System.out.printf("Loaded %s. Dimensions: %dx%d\n",args[0],srcRaster.getWidth(),srcRaster.getHeight());
+
 
         // Create a new raster to write the filtered image data to
         BadRaster destRaster = new BadRaster(srcRaster.getBands(),srcRaster.getWidth(),srcRaster.getHeight());
@@ -59,6 +61,7 @@ public class Kernelizr {
         // Divide the source image into blocks and iterate through
         // Each task has an associated KKernel derived from a BaseKernel
         BaseKernel baseKernel = new BaseKernel(baseKernelPath);
+        System.out.printf("Using kernel: %s, sum: %f\n",baseKernel.name,KOps.sum(baseKernel.getKernel()));
         int nBlocks = 0;
         for (int i = 0; i < srcRaster.getWidth()/blockSize; ++i) {
             for (int j = 0; j < srcRaster.getHeight()/blockSize; ++j) {
@@ -66,8 +69,7 @@ public class Kernelizr {
                 KTask task = new KTask(i*blockSize,j*blockSize,blockSize,blockSize);
                 task.setInputRaster(srcRaster);
                 task.setOutputRaster(destRaster);
-                KKernel kernel = new KKernel(3,3);
-                kernel.setKernel(new float [][] {{0.0625f,0.125f,0.0625f},{0.125f,0.25f,0.125f},{0.0625f,0.125f,0.0625f}});
+                KKernel kernel = baseKernel.getScaledKernel(1/(1.0f*j+0.75f*i+1));
                 task.setKernel(kernel);
                 tasks.push(task);
                 ++nBlocks;

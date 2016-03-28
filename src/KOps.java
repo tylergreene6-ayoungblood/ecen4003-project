@@ -46,6 +46,43 @@ public final class KOps {
         return newPixel;
     }
     /**
+     * Returns a four-element boolean array indicate which edges of the
+     * passed array are less than a threshold. Ordered [top,right,bottom,left]
+     * @param kernel A kernel in raw floating point format
+     * @param threshold The threshold to compare against.
+     * @returns A boolean array indicate which sides are all below the threshold.
+     */
+    public static boolean[] edgeCheck(float[][] kernel, float threshold) {
+        boolean [] edges = new boolean[4];
+        int width = kernel.length;
+        int height = kernel[0].length;
+        // Check top edge (j = 0)
+        edges[0] = true;
+        for (int i = 0; i < width; ++i) if (kernel[i][0] > threshold) edges[0] = false;
+        // check bottom edge (j = height-1)
+        edges[2] = true;
+        for (int i = 0; i < width; ++i) if (kernel[i][height-1] > threshold) edges[2] = false;
+        // check right edge (i = width-1)
+        edges[1] = true;
+        for (int j = 0; j < height; ++j) if (kernel[width-1][j] > threshold) edges[1] = false;
+        // check left edge (i = 0)
+        edges[3] = true;
+        for (int j = 0; j < height; ++j) if (kernel[0][j] > threshold) edges[3] = false;
+        return edges;
+    }
+    /**
+     * Returns the sum of a kernel. Utility method.
+     * @param kernel A two-dimensional array to be summed
+     * @return The sum of the array
+     */
+    public static float sum(float[][] kernel) {
+        float sum = 0.0f;
+        for (int i = 0; i < kernel.length; ++i)
+            for (int j = 0; j < kernel[0].length; ++j)
+                sum += kernel[i][j];
+        return sum;        
+    }
+    /**
      * Load a kernel from JSON. GSON parses the JSON file into a JSONKernel
      * object, which is then converted to a regular KKernel
      * @param path The JSON kernel path
@@ -53,21 +90,15 @@ public final class KOps {
      */
     public static JSONKernel kernelFromJSONPath(String path) {
         Gson gson = new Gson();
-
         try {
-
-            System.out.println("Reading JSON from a file");
-
+            // Get a buffered reader for file
             BufferedReader br = new BufferedReader(new FileReader(path));
-
-            //convert the json string back to object
-            JSONKernel kernelObj = gson.fromJson(br, JSONKernel.class);
-            System.out.println(kernelObj.type);
-
+            // convert the JSON file to JSONKernel
+            JSONKernel jKernel = gson.fromJson(br, JSONKernel.class);
+            return jKernel;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-
-        return JSONKernel;
     }
 }

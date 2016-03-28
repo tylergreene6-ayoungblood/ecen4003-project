@@ -47,6 +47,13 @@ public class KKernel {
         kernel = newKernel;
     }
     /**
+     * Get the raw kernel data as a floating point array.
+     @return The internal kernel array
+     */
+    public float[][] getKernel() {
+        return kernel;
+    }
+    /**
      * Set a specified element of the kernel
      * @param x The x index to modify
      * @param y The y index to modify

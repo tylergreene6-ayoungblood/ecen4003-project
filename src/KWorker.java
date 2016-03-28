@@ -30,7 +30,7 @@ public class KWorker implements Runnable {
      */
     @Override
     public void run() {
-        System.out.println("Processing task: " + task.getRegionString() + " on thread: " + tid);
+        //System.out.println("Processing task: " + task.getRegionString() + " on thread: " + tid);
         for (int i = 0; i < task.getWidth(); ++i) {
             for (int j = 0; j < task.getHeight(); ++j) {
                 // convolve and get the pixel value for this coordinate
@@ -39,6 +39,6 @@ public class KWorker implements Runnable {
                 task.getOutputRaster().setPixel(pixel, task.getOriginX() + i, task.getOriginY() + j);
             }
         }
-        System.out.println("Done with task: " + task.getRegionString() + " on thread: " + tid);
+        //System.out.println("Done with task: " + task.getRegionString() + " on thread: " + tid);
     }
 }
