@@ -4,6 +4,8 @@
  * Built for ECEN4003 Concurrent Programming
  */
 
+import com.google.gson.Gson;
+
 /**
  * KOps provides primitive image kernel operations. This is a pseudo-static
  * class (should not be instantiated).
@@ -40,5 +42,14 @@ public final class KOps {
             }
         }
         return newPixel;
+    }
+    /**
+     * Load a kernel from JSON. GSON parses the JSON file into a JSONKernel
+     * object, which is then converted to a regular KKernel
+     * @param path The JSON kernel path
+     * @return A KKernel derived from the JSON kernel
+     */
+    public static KKernel kernelFromJSONPath(String path) {
+        //
     }
 }
