@@ -35,10 +35,12 @@ public class BaseKernel extends KKernel {
     }
     /**
      * Return a scaled kernel as a KKernel, trimming dimensions if necessary.
-     * @param scale The factor by which to scale
-     * @return A sacled and trimmed kernel
+     * @param point An xy coordinate, normalized to [0,1]
+     * @return A modulated and trimmed kernel
      */
-    public KKernel getScaledKernel(float scale) {
+    public KKernel getModulatedKernel(float [] point) {
+        float scale = 1.0f/(point[0]*80 + point[1]*40);
+        System.out.println(scale);
         float [][] tempKernel = new float[width][height];
         float thresh = 1/(1024.0f);
         // Scale kernel
@@ -76,7 +78,7 @@ public class BaseKernel extends KKernel {
         newKernel.setKernel(tempKernel);
         newKernel.normalize();
         if (newKernel.getWidth() != width || newKernel.getHeight() != height) {
-            //System.out.printf("Kernel trimmed. Original size: %dx%d; new size: %dx%d\n",width,height,newKernel.getWidth(),newKernel.getHeight());
+            System.out.printf("Kernel trimmed. Original size: %dx%d; new size: %dx%d\n",width,height,newKernel.getWidth(),newKernel.getHeight());
         }
         return newKernel;
     }

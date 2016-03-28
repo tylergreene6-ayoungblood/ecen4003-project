@@ -10,11 +10,21 @@
 
 /**
  * A class representing a rectangular array of pixels. Far superior
- * to java.awt.image.Raster. A BadRaster encapsulates a three dimensional
- * dimensional pixel array that describes the particular raster frame.
- * <p>
+ * to java.awt.image.Raster. A BadRaster encapsulates a floating point
+ * pixel array. A pixel is a floating point array with an arbitrary number
+ * of components, as set by {@code bands}. In a typical RGB image, {@code bands}
+ * will be 3. For a monochrome image, {@code bands} will be 1.
+ * <br>
  * A BadRaster defines values for pixels occupying a rectangular area.
- * The rectangle is bounded by (0,0) and (width,height).
+ * The rectangle is bounded by (0,0) and (width,height). By convention,
+ * pixel values are scaled to [0,1], but BadRaster does not restrict this
+ * internally; pixel values can be any floating point value. BadRaster provides
+ * methods to read in image data from a file and write out image data to a file.
+ * These methods use java.awt.image.BufferedImage internally.
+ * <br>
+ * A BadRaster may also be thought of as a cube of floating point data, and
+ * manipulated as such. A single value within the cube can be manipulated,
+ * as can an entire "stack" (with {@code setPixel} and {@code getPixel}).
  */
 public class BadRaster {
     /** The byte array of raster image data */
@@ -117,6 +127,16 @@ public class BadRaster {
     public void setPixel(float [] pixel, int x, int y) {
         for (int i = 0; i < bands; ++i)
             data[i][x][y] = pixel[i];
+    }
+    /**
+     * Set a pixel component of the raster.
+     * @param value The value to set
+     * @param x     The x position of the pixel component to set
+     * @param y     The y position of the pixel component to set
+     * @param b     The band to set
+     */
+    public void setPixelComponent(float value, int x, int y, int b) {
+            data[b][x][y] = value;
     }
     /**
      * Get a pixel of the raster. If the pixel requested is out of range, the
