@@ -18,7 +18,7 @@ JFLAGS = -g -d $(BUILD_DIR) -Xlint:all -cp ".:libs/gson-2.6.2.jar"
 # All the files we want to build
 CLASSES = \
 		Kernelizr.java \
-		KKernel.java \
+		Kernel.java \
 		KTask.java \
 		KOps.java \
 		BadRaster.java \

@@ -64,7 +64,7 @@ public class Kernelizr {
         // Create a task queue and add items
         TaskQueue tasks = new TaskQueue();
         // Divide the source image into blocks and iterate through
-        // Each task has an associated KKernel derived from a BaseKernel
+        // Each task has an associated Kernel derived from a BaseKernel
         BaseKernel baseKernel = new BaseKernel(baseKernelPath);
         System.out.printf("Using kernel: %s, sum: %f\n",baseKernel.name,KOps.sum(baseKernel.getKernel()));
         int nBlocks = 0;
@@ -79,7 +79,7 @@ public class Kernelizr {
                 KTask task = new KTask(i*blockSize,j*blockSize,blockSize,blockSize);
                 task.setInputRaster(srcRaster);
                 task.setOutputRaster(destRaster);
-                KKernel kernel = baseKernel.getModulatedKernel(point);
+                Kernel kernel = baseKernel.getModulatedKernel(point);
                 task.setKernel(kernel);
                 tasks.push(task);
                 //System.out.println("Pushed task: " + task.getRegionString() + " w/ modulation: [" + point[0] + "," + point[1] + "]");

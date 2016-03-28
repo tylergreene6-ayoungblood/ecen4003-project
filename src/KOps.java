@@ -28,7 +28,7 @@ public final class KOps {
      * @return A n-band float vector representing a pixel, where n is
      * the number of bands.
      */
-    public static float[] convolve2D(BadRaster raster, int x, int y, KKernel kernel) {
+    public static float[] convolve2D(BadRaster raster, int x, int y, Kernel kernel) {
         int hw = kernel.getHalfWidth();
         int hh = kernel.getHalfHeight();
         float [] newPixel = new float[raster.getBands()];
@@ -85,7 +85,7 @@ public final class KOps {
     }
     /**
      * Load a kernel from JSON. GSON parses the JSON file into a JSONKernel
-     * object, which is then converted to a regular KKernel
+     * object, which is then converted to a regular Kernel
      * @param path The JSON kernel path
      * @return A JSONKernel derived from the JSON kernel
      */
