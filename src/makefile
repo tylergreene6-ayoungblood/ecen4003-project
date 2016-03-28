@@ -15,7 +15,8 @@ CLASSES = \
 		KTask.java \
 		KOps.java \
 		BadRaster.java \
-		TaskQueue.java
+		TaskQueue.java \
+		KWorker.java
 
 # help message by default
 .PHONY: default

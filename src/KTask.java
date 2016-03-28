@@ -8,8 +8,10 @@
  * KTask represents a task which is run by Kernelizr worker threads.
  */
 public class KTask {
-    /** The raster associated with the task. */
-    protected BadRaster raster;
+    /** The input raster associated with the task. */
+    protected BadRaster inRaster;
+    /** The output raster associated with the task. */
+    protected BadRaster outRaster;
     /** The x-coordinate of the origin of region of interest. */
     protected int startX;
     /** The y-coordinate of the origin of the region of interest. */
@@ -48,18 +50,32 @@ public class KTask {
         return kernel;
     }
     /**
-     * Set the raster for the task.
-     * @param raster The raster to add to the task
+     * Set the input (source) raster for the task.
+     * @param raster The input raster to add to the task
      */
-    public void setRaster(BadRaster raster) {
-        this.raster = raster;
+    public void setInputRaster(BadRaster raster) {
+        this.inRaster = raster;
     }
     /**
-     * Get the raster from the task.
-     * @return The raster of the task.
+     * Get the input (source ) raster from the task.
+     * @return The input raster of the task.
      */
-    public BadRaster getRaster() {
-        return raster;
+    public BadRaster getInputRaster() {
+        return inRaster;
+    }
+    /**
+     * Set the output (destination) raster for the task.
+     * @param raster The output raster to add to the task
+     */
+    public void setOutputRaster(BadRaster raster) {
+        this.outRaster = raster;
+    }
+    /**
+     * Get the output (destination) raster from the task.
+     * @return The output raster of the task.
+     */
+    public BadRaster getOutputRaster() {
+        return outRaster;
     }
     /**
      * Get the width associated with the task.
@@ -74,6 +90,20 @@ public class KTask {
      */
     public int getHeight() {
         return height;
+    }
+    /**
+     * Get the x coordinate of the origin for the task.
+     * @return The x coordinate of the origin.
+     */
+    public int getOriginX() {
+        return startX;
+    }
+    /**
+     * Get the y coordinate of the origin for the task.
+     * @return The y coordinate of the origin.
+     */
+    public int getOriginY() {
+        return startY;
     }
     /**
      * Set the region of interest for the task

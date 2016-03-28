@@ -15,6 +15,8 @@ public class TaskQueue {
     private TaskNode head;
     /** Tail node */
     private TaskNode tail;
+    /** Queue length */
+    private int length;
     /** Create an empty queue */
     public TaskQueue(){
         // Initialize head and tail
@@ -23,6 +25,7 @@ public class TaskQueue {
         // Set empty queue
         head.next = tail;
         tail.next = null;
+        length = 0;
     }
     /**
      * Add a task to the the queue.
@@ -41,6 +44,7 @@ public class TaskQueue {
             if (validatePush(curr, next)) { //make sure curr points to next
                 head.next = newNode; //add new node to the front of the queue
                 newNode.next = next;
+                ++length;
                 return true;
             } else { // if not return false
                 return false;
@@ -69,6 +73,7 @@ public class TaskQueue {
                 try {
                     if (validatePop(pred, curr, next)) {
                         pred.next = next; // connect pred to next skipping current
+                        --length;
                         return curr.task;
                     } else {
                         return null; // if validate doesn't work return null
@@ -82,6 +87,20 @@ public class TaskQueue {
         } finally {
             pred.unlock();
         }
+    }
+    /**
+     * Get the length of the queue
+     * @return The length of the queue
+     */
+    public int length() {
+        return length;
+    }
+    /**
+     * Return true if the queue is empty
+     * @return True if empty, false otherwise
+     */
+    public boolean isEmpty() {
+        return (length == 0);
     }
     /**
      * Check if our push worked

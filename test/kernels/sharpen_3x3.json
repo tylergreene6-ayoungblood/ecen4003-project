@@ -1,0 +1,12 @@
+{
+    "type": 0,
+    "kernel": [
+        [  0, -1,  0],
+        [ -1,  5, -1],
+        [  0, -1,  0]
+    ],
+    "coeff": 1,
+    "width": 3,
+    "height": 3,
+    "name": "3x3 Sharpen"
+}
