@@ -56,18 +56,19 @@ public final class KOps {
         boolean [] edges = new boolean[4];
         int width = kernel.length;
         int height = kernel[0].length;
+        float t = threshold;
         // Check top edge (j = 0)
         edges[0] = true;
-        for (int i = 0; i < width; ++i) if (kernel[i][0] > threshold) edges[0] = false;
+        for (int i = 0; i < width; ++i) if (kernel[i][0] > t || kernel[i][0] < -t) edges[0] = false;
         // check bottom edge (j = height-1)
         edges[2] = true;
-        for (int i = 0; i < width; ++i) if (kernel[i][height-1] > threshold) edges[2] = false;
+        for (int i = 0; i < width; ++i) if (kernel[i][height-1] > t || kernel[i][height-1] < -t) edges[2] = false;
         // check right edge (i = width-1)
         edges[1] = true;
-        for (int j = 0; j < height; ++j) if (kernel[width-1][j] > threshold) edges[1] = false;
+        for (int j = 0; j < height; ++j) if (kernel[width-1][j] > t || kernel[width-1][j] < -t) edges[1] = false;
         // check left edge (i = 0)
         edges[3] = true;
-        for (int j = 0; j < height; ++j) if (kernel[0][j] > threshold) edges[3] = false;
+        for (int j = 0; j < height; ++j) if (kernel[0][j] > t || kernel[0][j] < -t) edges[3] = false;
         return edges;
     }
     /**

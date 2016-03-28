@@ -41,7 +41,7 @@ public class Kernelizr {
         // Path to save the image
         final String destinationPath = "../test/output.png";
         // Path to base kernel
-        final String baseKernelPath = "../test/kernels/gaussianblur_11x11.json";
+        final String baseKernelPath = "../test/kernels/diamondblur_11x11.json";
 
 
         // Load the source image into a raster
@@ -58,7 +58,6 @@ public class Kernelizr {
             System.exit(1);
         }
         System.out.printf("Loaded %s. Dimensions: %dx%d\n",args[0],srcRaster.getWidth(),srcRaster.getHeight());
-
 
         // Create a new raster to write the filtered image data to
         BadRaster destRaster = new BadRaster(srcRaster.getBands(),srcRaster.getWidth(),srcRaster.getHeight());
@@ -83,7 +82,7 @@ public class Kernelizr {
                 KKernel kernel = baseKernel.getModulatedKernel(point);
                 task.setKernel(kernel);
                 tasks.push(task);
-                System.out.println("Pushed task: " + task.getRegionString() + " w/ modulation: [" + point[0] + "," + point[1] + "]");
+                //System.out.println("Pushed task: " + task.getRegionString() + " w/ modulation: [" + point[0] + "," + point[1] + "]");
                 ++nBlocks;
             }
         }

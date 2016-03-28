@@ -40,9 +40,9 @@ public class BaseKernel extends KKernel {
      */
     public KKernel getModulatedKernel(float [] point) {
         float scale = 1.0f/(point[0]*80 + point[1]*40);
-        System.out.println(scale);
+        //System.out.println(scale);
         float [][] tempKernel = new float[width][height];
-        float thresh = 1/(1024.0f);
+        float thresh = 1/(2048.0f);
         // Scale kernel
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
@@ -78,7 +78,7 @@ public class BaseKernel extends KKernel {
         newKernel.setKernel(tempKernel);
         newKernel.normalize();
         if (newKernel.getWidth() != width || newKernel.getHeight() != height) {
-            System.out.printf("Kernel trimmed. Original size: %dx%d; new size: %dx%d\n",width,height,newKernel.getWidth(),newKernel.getHeight());
+            //System.out.printf("Kernel trimmed. Original size: %dx%d; new size: %dx%d\n",width,height,newKernel.getWidth(),newKernel.getHeight());
         }
         return newKernel;
     }
