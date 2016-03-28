@@ -9,9 +9,9 @@
  * matrices describing an image filter. The dimensions should be mxn, where
  * both m and n are odd numbers: m,n = 2k+1 for all k.
  * BaseKernel describes an image kernel as a function of space. By specifying
- * a point, BaseKernel can generate a static kernel (KKernel)
+ * a point, BaseKernel can generate a static kernel (Kernel)
  */
-public class BaseKernel extends KKernel {
+public class BaseKernel extends Kernel {
     public String name;
     /**
      * Creates a BaseKernel from a JSONKernel.
@@ -34,13 +34,15 @@ public class BaseKernel extends KKernel {
         this(KOps.kernelFromJSONPath(jKernelPath));
     }
     /**
-     * Return a scaled kernel as a KKernel, trimming dimensions if necessary.
-     * @param scale The factor by which to scale
-     * @return A sacled and trimmed kernel
+     * Return a scaled kernel as a Kernel, trimming dimensions if necessary.
+     * @param point An xy coordinate, normalized to [0,1]
+     * @return A modulated and trimmed kernel
      */
-    public KKernel getScaledKernel(float scale) {
+    public Kernel getModulatedKernel(float [] point) {
+        float scale = 1.0f/(point[0]*80 + point[1]*40);
+        //System.out.println(scale);
         float [][] tempKernel = new float[width][height];
-        float thresh = 1/(1024.0f);
+        float thresh = 1/(2048.0f);
         // Scale kernel
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
@@ -72,7 +74,7 @@ public class BaseKernel extends KKernel {
             edgeCheck = KOps.edgeCheck(tempKernel, thresh);
             trimLR = edgeCheck[1] && edgeCheck[3];
         }
-        KKernel newKernel = new KKernel(cwidth,cheight);
+        Kernel newKernel = new Kernel(cwidth,cheight);
         newKernel.setKernel(tempKernel);
         newKernel.normalize();
         if (newKernel.getWidth() != width || newKernel.getHeight() != height) {

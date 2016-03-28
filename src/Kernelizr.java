@@ -12,10 +12,10 @@ import java.util.concurrent.*;
  */
 public class Kernelizr {
     /**
-     * The main method of Kernelizr. Handles the higher-level process:
-     * - loads an image file
-     * - kicks off the image processing
-     * - saves the image to a file
+     * The main method of Kernelizr. Handles the higher-level process:<br>
+     * - loads an image file<br>
+     * - kicks off the image processing<br>
+     * - saves the image to a file<br>
      * @param args The command-line args for the main program.
      */
     public static void main(String[] args) {
@@ -23,8 +23,14 @@ public class Kernelizr {
         // The first argument should be a path to an image file.
         // If it is not, complain. Otherwise, try to open it
         if (args.length < 1) {
-            System.out.println("No file path provided. Exiting.");
+            System.out.println("No image path provided.");
+            System.out.println("Usage:");
+            System.out.println("    java Kernelizr image_path [kernel_path]");
+            System.out.println("    ");
             return;
+        }
+        if (args.length < 2) {
+            System.out.println("No kernel path provided. Using default kernel.");
         }
         // Set processing parameters -------------------------------------------
         // blockSize is the size in pixels of each block associated with a task
@@ -35,7 +41,7 @@ public class Kernelizr {
         // Path to save the image
         final String destinationPath = "../test/output.png";
         // Path to base kernel
-        final String baseKernelPath = "../test/kernels/quadraticcross_11x11.json";
+        final String baseKernelPath = "../test/kernels/diamondblur_11x11.json";
 
 
         // Load the source image into a raster
@@ -43,8 +49,8 @@ public class Kernelizr {
         try {
             //srcRaster.loadFromPath(args[0])
             //srcRaster.loadFromPath("../test/datasets/image/rgb3x3.png");
-            srcRaster.loadFromPath("../test/datasets/image/103-menger-3840x2160-2_cropped_640x640.png");
-            //srcRaster.loadFromPath("../test/datasets/image/hw8_z2_20150819T060000_640x640.png");
+            //srcRaster.loadFromPath("../test/datasets/image/hw8_z20_20150807T000000.png");
+            srcRaster.loadFromPath("../test/datasets/image/hw8_z2_20150819T060000_640x640.png");
             //srcRaster.loadFromPath("../test/datasets/image/pattern_128x128.png");
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,25 +59,30 @@ public class Kernelizr {
         }
         System.out.printf("Loaded %s. Dimensions: %dx%d\n",args[0],srcRaster.getWidth(),srcRaster.getHeight());
 
-
         // Create a new raster to write the filtered image data to
         BadRaster destRaster = new BadRaster(srcRaster.getBands(),srcRaster.getWidth(),srcRaster.getHeight());
         // Create a task queue and add items
         TaskQueue tasks = new TaskQueue();
         // Divide the source image into blocks and iterate through
-        // Each task has an associated KKernel derived from a BaseKernel
+        // Each task has an associated Kernel derived from a BaseKernel
         BaseKernel baseKernel = new BaseKernel(baseKernelPath);
         System.out.printf("Using kernel: %s, sum: %f\n",baseKernel.name,KOps.sum(baseKernel.getKernel()));
         int nBlocks = 0;
-        for (int i = 0; i < srcRaster.getWidth()/blockSize; ++i) {
-            for (int j = 0; j < srcRaster.getHeight()/blockSize; ++j) {
+        int xBlocks = srcRaster.getWidth()/blockSize;
+        int yBlocks = srcRaster.getHeight()/blockSize;
+        if (srcRaster.getWidth() % blockSize != 0 || srcRaster.getHeight() % blockSize != 0)
+            System.out.println("Warning: Image dimensions not a multiple of blocksize. Some pixels may be ignored.");
+        for (int i = 0; i < xBlocks; ++i) {
+            for (int j = 0; j < yBlocks; ++j) {
+                float [] point = {i/((float)xBlocks),j/((float)yBlocks)};
                 // Create a task
                 KTask task = new KTask(i*blockSize,j*blockSize,blockSize,blockSize);
                 task.setInputRaster(srcRaster);
                 task.setOutputRaster(destRaster);
-                KKernel kernel = baseKernel.getScaledKernel(1/(1.0f*j+0.75f*i+1));
+                Kernel kernel = baseKernel.getModulatedKernel(point);
                 task.setKernel(kernel);
                 tasks.push(task);
+                //System.out.println("Pushed task: " + task.getRegionString() + " w/ modulation: [" + point[0] + "," + point[1] + "]");
                 ++nBlocks;
             }
         }

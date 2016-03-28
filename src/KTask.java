@@ -21,7 +21,7 @@ public class KTask {
     /** The height of the region of interest. */
     protected int height;
     /** The kernel associated with the task. */
-    protected KKernel kernel;
+    protected Kernel kernel;
     /**
      * Get a new KTask with a specific region.
      * @param originX The x-coordinate of the origin of the region
@@ -39,14 +39,14 @@ public class KTask {
      * Set the kernel of the task.
      * @param kernel The kernel to add to the task
      */
-    public void setKernel(KKernel kernel) {
+    public void setKernel(Kernel kernel) {
         this.kernel = kernel;
     }
     /**
      * Get the kernel from the task.
      * @return The kernel of the task.
      */
-    public KKernel getKernel() {
+    public Kernel getKernel() {
         return kernel;
     }
     /**
