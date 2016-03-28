@@ -4,7 +4,7 @@
 JC = javac
 BUILD_DIR = ../test
 DOCS_DIR  = ../docs
-JFLAGS = -g -d $(BUILD_DIR) -Xlint:all
+JFLAGS = -g -d $(BUILD_DIR) -Xlint:all -cp ".:libs/gson-2.6.2.jar"
 .SUFFIXES: .java .class
 .java.class:
 		$(JC) $(JFLAGS) $*.java
