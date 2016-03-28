@@ -5,6 +5,8 @@
  */
 
 import com.google.gson.Gson;
+import java.io.*;
+import java.util.List;
 
 /**
  * KOps provides primitive image kernel operations. This is a pseudo-static
@@ -50,6 +52,22 @@ public final class KOps {
      * @return A JSONKernel derived from the JSON kernel
      */
     public static JSONKernel kernelFromJSONPath(String path) {
-        return null;
+        Gson gson = new Gson();
+
+        try {
+
+            System.out.println("Reading JSON from a file");
+
+            BufferedReader br = new BufferedReader(new FileReader(path));
+
+            //convert the json string back to object
+            JSONKernel kernelObj = gson.fromJson(br, JSONKernel.class);
+            System.out.println(kernelObj.type);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return JSONKernel;
     }
 }
