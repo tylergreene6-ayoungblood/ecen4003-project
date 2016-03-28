@@ -1,12 +1,14 @@
+# Class files
 *.class
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Package files
+#*.jar
+# Add an exception for *.jar libraries
+#!src/libs/*.jar
+# @TODO everything's broken. Fix up.
 
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# JVM crash logs
 hs_err_pid*
+
+# OS X rubbish
+.DS_Store
