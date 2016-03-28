@@ -63,4 +63,4 @@ docs-clean:
 
 # this target is broken (building jars is hard)
 jar: rebuild
-		jar cvfm ../Kernelizr.jar META-INF/MANIFEST.mf $(BUILD_DIR)/$(CLASSES:.java=.class)
+		jar cvfm ../Kernelizr.jar manifest.txt $(BUILD_DIR)/*.class
