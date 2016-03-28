@@ -28,7 +28,7 @@ public final class KOps {
      * @return A n-band float vector representing a pixel, where n is
      * the number of bands.
      */
-    public static float[] convolve2D(BadRaster raster, int x, int y, KKernel kernel) {
+    public static float[] convolve2D(BadRaster raster, int x, int y, Kernel kernel) {
         int hw = kernel.getHalfWidth();
         int hh = kernel.getHalfHeight();
         float [] newPixel = new float[raster.getBands()];
@@ -46,28 +46,60 @@ public final class KOps {
         return newPixel;
     }
     /**
+     * Returns a four-element boolean array indicate which edges of the
+     * passed array are less than a threshold. Ordered [top,right,bottom,left]
+     * @param kernel A kernel in raw floating point format
+     * @param threshold The threshold to compare against.
+     * @return A boolean array indicate which sides are all below the threshold.
+     */
+    public static boolean[] edgeCheck(float[][] kernel, float threshold) {
+        boolean [] edges = new boolean[4];
+        int width = kernel.length;
+        int height = kernel[0].length;
+        float t = threshold;
+        // Check top edge (j = 0)
+        edges[0] = true;
+        for (int i = 0; i < width; ++i) if (kernel[i][0] > t || kernel[i][0] < -t) edges[0] = false;
+        // check bottom edge (j = height-1)
+        edges[2] = true;
+        for (int i = 0; i < width; ++i) if (kernel[i][height-1] > t || kernel[i][height-1] < -t) edges[2] = false;
+        // check right edge (i = width-1)
+        edges[1] = true;
+        for (int j = 0; j < height; ++j) if (kernel[width-1][j] > t || kernel[width-1][j] < -t) edges[1] = false;
+        // check left edge (i = 0)
+        edges[3] = true;
+        for (int j = 0; j < height; ++j) if (kernel[0][j] > t || kernel[0][j] < -t) edges[3] = false;
+        return edges;
+    }
+    /**
+     * Returns the sum of a kernel. Utility method.
+     * @param kernel A two-dimensional array to be summed
+     * @return The sum of the array
+     */
+    public static float sum(float[][] kernel) {
+        float sum = 0.0f;
+        for (int i = 0; i < kernel.length; ++i)
+            for (int j = 0; j < kernel[0].length; ++j)
+                sum += kernel[i][j];
+        return sum;
+    }
+    /**
      * Load a kernel from JSON. GSON parses the JSON file into a JSONKernel
-     * object, which is then converted to a regular KKernel
+     * object, which is then converted to a regular Kernel
      * @param path The JSON kernel path
-     * @return A KKernel derived from the JSON kernel
+     * @return A JSONKernel derived from the JSON kernel
      */
     public static JSONKernel kernelFromJSONPath(String path) {
         Gson gson = new Gson();
-
         try {
-
-            System.out.println("Reading JSON from a file");
-
+            // Get a buffered reader for file
             BufferedReader br = new BufferedReader(new FileReader(path));
-
-            //convert the json string back to object
-            JSONKernel kernelObj = gson.fromJson(br, JSONKernel.class);
-            System.out.println(kernelObj.type);
-
+            // convert the JSON file to JSONKernel
+            JSONKernel jKernel = gson.fromJson(br, JSONKernel.class);
+            return jKernel;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-
-        return null;
     }
 }

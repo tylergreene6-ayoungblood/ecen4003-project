@@ -1,3 +1,2 @@
 Manifest-Version: 1.0
-Created-By: <author>
-Main-Class: kernelizr.Kernelizr
+Main-Class: test.Kernelizr

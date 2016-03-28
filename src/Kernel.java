@@ -1,5 +1,5 @@
 /*
- * KKernel.java
+ * Kernel.java
  * Authors: Tyler Greene, Akira Youngblood
  * Built for ECEN4003 Concurrent Programming
  */
@@ -9,7 +9,7 @@
  * matrices describing an image filter. The dimensions should be mxn, where
  * both m and n are odd numbers: m,n = 2k+1 for all k.
  */
-public class KKernel {
+public class Kernel {
     /** The floating point kernel, a 2D array */
     protected float[][] kernel;
     /** The width of the kernel. */
@@ -17,12 +17,18 @@ public class KKernel {
     /** The height of the kernel. */
     protected int height;
     /**
-     * Creates a KKernel with a default kernel. The default kernel is an
+     * An empty no-arg constructor. Necessary for subclasses to do their thing.
+     */
+    public Kernel() {
+        //
+    }
+    /**
+     * Creates a Kernel with a default kernel. The default kernel is an
      * identity matrix for image processing (zero everywhere except the center)
      * @param width The width of the kernel
      * @param height The Height of the kernel
      */
-    public KKernel(int width, int height) {
+    public Kernel(int width, int height) {
         this.width = width;
         this.height = height;
         kernel = new float[width][height];
@@ -39,6 +45,13 @@ public class KKernel {
      */
     public void setKernel(float[][] newKernel) {
         kernel = newKernel;
+    }
+    /**
+     * Get the raw kernel data as a floating point array.
+     @return The internal kernel array
+     */
+    public float[][] getKernel() {
+        return kernel;
     }
     /**
      * Set a specified element of the kernel
