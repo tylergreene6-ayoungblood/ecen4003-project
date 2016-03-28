@@ -7,6 +7,9 @@
 #!src/libs/*.jar
 # @TODO everything's broken. Fix up.
 
+# Ignore output image files
+test/*.png
+
 # JVM crash logs
 hs_err_pid*
 

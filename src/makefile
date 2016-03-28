@@ -40,10 +40,10 @@ clean:
 rebuild: clean build
 
 run: build
-		java -cp $(BUILD_DIR)/ Kernelizr $(BUILD_DIR)/datasets/image/103-menger-3840x2160-2_cropped_640x640.png
+		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr $(BUILD_DIR)/datasets/image/103-menger-3840x2160-2_cropped_640x640.png
 
 docs:
-		javadoc -d $(DOCS_DIR)/javadoc $(CLASSES)
+		javadoc -d $(DOCS_DIR)/javadoc -cp ".:libs/gson-2.6.2.jar" $(CLASSES)
 
 docs-clean:
 		$(RM) $(DOCS_DIR)/javadoc/*

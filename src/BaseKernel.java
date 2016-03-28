@@ -12,6 +12,7 @@
  * a point, BaseKernel can generate a static kernel (KKernel)
  */
 public class BaseKernel extends KKernel {
+    public String name;
     /**
      * Creates a BaseKernel from a JSONKernel.
      * @param jKernel The JSONKernel to copy from
@@ -19,6 +20,8 @@ public class BaseKernel extends KKernel {
     public BaseKernel(JSONKernel jKernel) {
         this.width = jKernel.width;
         this.height = jKernel.height;
+        kernel = new float[width][height];
+        this.name = jKernel.name;
         for (int i = 0; i < this.width; ++i)
             for (int j = 0; j < this.height; ++j)
                 kernel[i][j] = jKernel.kernel[i][j] * jKernel.coeff;
@@ -37,29 +40,43 @@ public class BaseKernel extends KKernel {
      */
     public KKernel getScaledKernel(float scale) {
         float [][] tempKernel = new float[width][height];
-        float thresh = 1/256.0f;
+        float thresh = 1/(1024.0f);
+        // Scale kernel
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
-                // scale and clip values
-                float v = kernel[i][j] * scale;
-                tempKernel[i][j] = (v>thresh)?v:0.0f;
+                tempKernel[i][j] = kernel[i][j] * scale;
             }
         }
-        // perimeter check
-        boolean trimHorizontal = true; // do we need to trim the top and bottom?
-        for (int i = 0; i < width; ++i) if (tempKernel[i][0] > 0.0f) trimHorizontal = false;
-        for (int i = 0; i < width; ++i) if (tempKernel[i][height-1] > 0.0f) trimHorizontal = false;
-        boolean trimVertical = true; // do we need to trim the sides?
-        for (int j = 0; j < height; ++j) if (tempKernel[0][j] > 0.0f) trimVertical = false;
-        for (int j = 0; j < height; ++j) if (tempKernel[width-1][j] > 0.0f) trimVertical = false;
-        KKernel newKernel = new KKernel(width - (trimVertical?2:0), height - (trimHorizontal?2:0));
-        for (int i = (trimVertical?1:0); i < width - (trimVertical?1:0); ++i) {
-            for (int j = (trimHorizontal?1:0); j < height - (trimHorizontal?1:0); ++j) {
-                newKernel.set(i - (trimVertical?1:0), j - (trimHorizontal?1:0), tempKernel[i][j]);
-            }
+        int cwidth = width;
+        int cheight = height;
+        boolean [] edgeCheck = KOps.edgeCheck(tempKernel, thresh);
+        boolean trimTB = edgeCheck[0] && edgeCheck[2];
+        while (trimTB && cheight > 1) {
+            cheight -= 2;
+            float [][] newTempKernel = new float[cwidth][cheight];
+            for (int i = 0; i < cwidth; ++i)
+                for (int j = 0; j < cheight; ++j)
+                    newTempKernel[i][j] = tempKernel[i][j+1];
+            tempKernel = newTempKernel;
+            edgeCheck = KOps.edgeCheck(tempKernel, thresh);
+            trimTB = edgeCheck[0] && edgeCheck[2];
         }
+        boolean trimLR = edgeCheck[1] && edgeCheck[3];
+        while (trimLR && cwidth > 1) {
+            cwidth -= 2;
+            float [][] newTempKernel = new float[cwidth][cheight];
+            for (int i = 0; i < cwidth; ++i)
+                for (int j = 0; j < cheight; ++j)
+                    newTempKernel[i][j] = tempKernel[i+1][j];
+            tempKernel = newTempKernel;
+            edgeCheck = KOps.edgeCheck(tempKernel, thresh);
+            trimLR = edgeCheck[1] && edgeCheck[3];
+        }
+        KKernel newKernel = new KKernel(cwidth,cheight);
+        newKernel.setKernel(tempKernel);
+        newKernel.normalize();
         if (newKernel.getWidth() != width || newKernel.getHeight() != height) {
-            System.out.printf("Kernel trimmed. Original size: %dx%d; new size: %dx%d\n",width,height,newKernel.getWidth(),newKernel.getHeight());
+            //System.out.printf("Kernel trimmed. Original size: %dx%d; new size: %dx%d\n",width,height,newKernel.getWidth(),newKernel.getHeight());
         }
         return newKernel;
     }
