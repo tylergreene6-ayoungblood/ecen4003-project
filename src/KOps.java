@@ -49,7 +49,7 @@ public final class KOps {
      * Load a kernel from JSON. GSON parses the JSON file into a JSONKernel
      * object, which is then converted to a regular KKernel
      * @param path The JSON kernel path
-     * @return A KKernel derived from the JSON kernel
+     * @return A JSONKernel derived from the JSON kernel
      */
     public static JSONKernel kernelFromJSONPath(String path) {
         Gson gson = new Gson();
@@ -68,6 +68,6 @@ public final class KOps {
             e.printStackTrace();
         }
 
-        return null;
+        return JSONKernel;
     }
 }
