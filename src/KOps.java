@@ -50,7 +50,7 @@ public final class KOps {
      * passed array are less than a threshold. Ordered [top,right,bottom,left]
      * @param kernel A kernel in raw floating point format
      * @param threshold The threshold to compare against.
-     * @returns A boolean array indicate which sides are all below the threshold.
+     * @return A boolean array indicate which sides are all below the threshold.
      */
     public static boolean[] edgeCheck(float[][] kernel, float threshold) {
         boolean [] edges = new boolean[4];
@@ -80,7 +80,7 @@ public final class KOps {
         for (int i = 0; i < kernel.length; ++i)
             for (int j = 0; j < kernel[0].length; ++j)
                 sum += kernel[i][j];
-        return sum;        
+        return sum;
     }
     /**
      * Load a kernel from JSON. GSON parses the JSON file into a JSONKernel
