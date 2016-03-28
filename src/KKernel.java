@@ -17,6 +17,12 @@ public class KKernel {
     /** The height of the kernel. */
     protected int height;
     /**
+     * An empty no-arg constructor. Necessary for subclasses to do their thing.
+     */
+    public KKernel() {
+        //
+    }
+    /**
      * Creates a KKernel with a default kernel. The default kernel is an
      * identity matrix for image processing (zero everywhere except the center)
      * @param width The width of the kernel
