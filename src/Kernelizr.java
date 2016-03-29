@@ -44,7 +44,7 @@ public class Kernelizr {
         if (args.length >= 3) {
             kernelPath = args[2];
         } else {
-            kernelPath = "../test/kernels/gaussianblur_7x7.json";
+            kernelPath = "../test/kernels/gaussianblur_7x7x1.json";
             System.out.printf("WARN: No kernel path provided. Using default %s\n", kernelPath);
         }
         // Search for *.png files in the specified directory and add them to
@@ -61,9 +61,28 @@ public class Kernelizr {
         // Load the base kernel
         BaseKernel baseKernel = new BaseKernel(kernelPath);
         System.out.printf("Using kernel: %s, sum: %f\n",baseKernel.name,KOps.sum(baseKernel.getKernel()));
+        // The main processing loop. Loop through frame-by-frame, loading and
+        // saving as necessary
+        ArrayList<BadRaster> srcRasters = new ArrayList<BadRaster>();
+        ArrayList<BadRaster> outRasters = new ArrayList<BadRaster>();
+        // Preload (kernel depth + 1)/2 frames
+        for (int i = 0; i < (baseKernel.getDepth()+1)/2; ++i) {
+            BadRaster raster = new BadRaster();
+            File file = srcFiles.get(i);
+            System.out.println("Preloading " + file.getName());
+            try {
+                raster.loadFromFile(file);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("ERROR: Failed to open source image: " + file.getName());
+                System.exit(1);
+            }
+            srcRasters.add(raster);
+        }
+        /*
 
         // Iterate through the files and load into a BadRaster array
-        ArrayList<BadRaster> srcRasters = new ArrayList<BadRaster>();
+
         for (File file : srcFiles) {
             BadRaster raster = new BadRaster();
             try {
@@ -94,7 +113,7 @@ public class Kernelizr {
         }
         */
         // Get an array of file handles ----------------------------------------
-
+        */
         return;
         /*
         // Set processing parameters -------------------------------------------
