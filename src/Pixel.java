@@ -143,7 +143,7 @@ public class Pixel {
     /**
      * Add a value to a given band
      * @param band The band to modify
-     * @param v The value to add
+     * @param value The value to add
      */
     public void add(int band, float value) {
         p[band] += value;

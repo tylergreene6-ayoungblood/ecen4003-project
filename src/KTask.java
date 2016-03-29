@@ -57,7 +57,7 @@ public class KTask {
     }
     /**
      * Set the input (source) rasters for the task.
-     * @param raster The input rasters to add to the task
+     * @param rasters The input rasters to add to the task
      */
     public void setInputRaster(ArrayList<BadRaster> rasters) {
         this.inRasters = rasters;
