@@ -6,7 +6,8 @@
 
 import com.google.gson.Gson;
 import java.io.*;
-import java.util.List;
+//import java.util.List;
+import java.util.ArrayList;
 
 /**
  * KOps provides primitive image kernel operations. This is a pseudo-static
@@ -29,13 +30,13 @@ public final class KOps {
      * @return A n-band float vector representing a pixel, where n is
      * the number of bands.
      */
-    public static Pixel convolve3D(BadRaster[] rasters, int x, int y, int z, Kernel kernel) {
+    public static Pixel convolve3D(ArrayList<BadRaster> rasters, int x, int y, int z, Kernel kernel) {
         int hw = kernel.getHalfWidth();
         int hh = kernel.getHalfHeight();
         int hd = kernel.getHalfDepth();
-        Pixel pixel = new Pixel(rasters[0].getBands());
+        Pixel pixel = new Pixel(rasters.get(0).getBands());
         // iterate through bands
-        for (int b = 0; b < rasters[0].getBands(); ++b) {
+        for (int b = 0; b < rasters.get(0).getBands(); ++b) {
             // iterate through kernel
             for (int k = 0; k < kernel.getHeight(); ++k) {
                 for (int i = 0; i < kernel.getWidth(); ++i) {
@@ -43,7 +44,9 @@ public final class KOps {
                         int xi = x - hw + i;
                         int yi = y - hh + j;
                         int zi = z - hd + k;
-                        pixel.add(b, kernel.get(i, j, k) * rasters[zi].getPixelComponent(xi,yi,b));
+                        if (zi < 0) zi = 0;
+                        if (zi >= rasters.size()) zi = rasters.size()-1;
+                        pixel.add(b, kernel.get(i, j, k) * rasters.get(zi).getPixelComponent(xi,yi,b));
                     }
                 }
             }

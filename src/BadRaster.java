@@ -159,6 +159,7 @@ public class BadRaster {
      * @param y The y position of the pixel to get
      * @return An n-element float array, where n is the number of bands
      */
+    /*
     public float [] getPixel(int x, int y) {
         int xi = (x<0)?0:((x>=width)?width-1:x);
         int yi = (y<0)?0:((y>=height)?height-1:y);
@@ -166,6 +167,22 @@ public class BadRaster {
         for (int i = 0; i < bands; ++i)
             pixel[i] = data[i][xi][yi];
         return pixel;
+    }
+    */
+    /**
+     * Get a pixel of the raster. If the pixel requested is out of range, the
+     * returned value will be clamped to an edge pixel.
+     * @param x The x position of the pixel to get
+     * @param y The y position of the pixel to get
+     * @return A Pixel from the specified position
+     */
+    public Pixel getPixel(int x, int y) {
+        int xi = (x<0)?0:((x>=width)?width-1:x);
+        int yi = (y<0)?0:((y>=height)?height-1:y);
+        float [] pixel = new float[bands];
+        for (int i = 0; i < bands; ++i)
+            pixel[i] = data[i][xi][yi];
+        return new Pixel(pixel);
     }
     /**
      * Get a pixel component. If the pixel component requested is out of range,

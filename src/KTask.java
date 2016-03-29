@@ -4,12 +4,14 @@
  * Built for ECEN4003 Concurrent Programming
  */
 
+import java.util.ArrayList;
+
 /**
  * KTask represents a task which is run by Kernelizr worker threads.
  */
 public class KTask {
-    /** The input raster associated with the task. */
-    protected BadRaster inRaster;
+    /** The input raster list associated with the task. */
+    protected ArrayList<BadRaster> inRasters;
     /** The output raster associated with the task. */
     protected BadRaster outRaster;
     /** The x-coordinate of the origin of region of interest. */
@@ -20,16 +22,20 @@ public class KTask {
     protected int width;
     /** The height of the region of interest. */
     protected int height;
+    /** The frame of the region of interest. */
+    protected int frame;
     /** The kernel associated with the task. */
     protected Kernel kernel;
     /**
      * Get a new KTask with a specific region.
+     * @param frame The frame of the task
      * @param originX The x-coordinate of the origin of the region
      * @param originY The y-coordinate of the origin of the region
      * @param width The width of the region
      * @param height The width of the region
      */
-    public KTask(int originX, int originY, int width, int height) {
+    public KTask(int frame, int originX, int originY, int width, int height) {
+        this.frame = frame;
         this.startX = originX;
         this.startY = originY;
         this.width = width;
@@ -50,18 +56,18 @@ public class KTask {
         return kernel;
     }
     /**
-     * Set the input (source) raster for the task.
-     * @param raster The input raster to add to the task
+     * Set the input (source) rasters for the task.
+     * @param raster The input rasters to add to the task
      */
-    public void setInputRaster(BadRaster raster) {
-        this.inRaster = raster;
+    public void setInputRaster(ArrayList<BadRaster> rasters) {
+        this.inRasters = rasters;
     }
     /**
      * Get the input (source ) raster from the task.
      * @return The input raster of the task.
      */
-    public BadRaster getInputRaster() {
-        return inRaster;
+    public ArrayList<BadRaster> getInputRasters() {
+        return inRasters;
     }
     /**
      * Set the output (destination) raster for the task.
@@ -104,6 +110,13 @@ public class KTask {
      */
     public int getOriginY() {
         return startY;
+    }
+    /**
+     * Get the frame for the task.
+     * @return The frame
+     */
+    public int getFrame() {
+        return frame;
     }
     /**
      * Set the region of interest for the task
