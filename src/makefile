@@ -24,7 +24,8 @@ CLASSES = \
 		BadRaster.java \
 		TaskQueue.java \
 		KWorker.java \
-		JSONKernel.java
+		JSONKernel.java \
+		Pixel.java
 
 # help message by default
 .PHONY: default
