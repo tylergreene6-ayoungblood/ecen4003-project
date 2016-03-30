@@ -23,7 +23,7 @@ public class BaseKernel extends Kernel {
         this.depth = jKernel.depth;
         kernel = new float[depth][width][height];
         this.name = jKernel.name;
-        System.out.printf("w: %d, h: %d, d: %d; jKernel: %dx%dx%d\n", width, height, depth, )
+        System.out.printf("w: %d, h: %d, d: %d; jKernel: %dx%dx%d\n", width, height, depth, jKernel.kernel.length, jKernel.kernel[0].length, jKernel.kernel[0][0].length);
         for (int k = 0; k < this.depth; ++k)
             for (int i = 0; i < this.width; ++i)
                 for (int j = 0; j < this.height; ++j)
