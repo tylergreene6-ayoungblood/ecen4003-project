@@ -35,9 +35,14 @@ public class KWorker implements Runnable {
             for (int j = 0; j < task.getHeight(); ++j) {
                 // convolve and get the pixel value for this coordinate
                 //Pixel pixel = task.getInputRaster().getPixel(task.getOriginX() + i, task.getOriginY() + j);
-                Pixel pixel = KOps.convolve3D(task.getInputRasters(), task.getOriginX() + i, task.getOriginY() + j, task.getFrame(), task.getKernel());
-                // write the pixel value back to the destination raster
-                task.getOutputRaster().setPixel(pixel, task.getOriginX() + i, task.getOriginY() + j);
+                try { // fail fast and exit
+                    Pixel pixel = KOps.convolve3D(task.getInputRasters(), task.getOriginX() + i, task.getOriginY() + j, task.getFrame(), task.getKernel());
+                    // write the pixel value back to the destination raster
+                    task.getOutputRaster().setPixel(pixel, task.getOriginX() + i, task.getOriginY() + j);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
             }
         }
         //System.out.println("Done with task: " + task.getRegionString() + " on thread: " + tid);

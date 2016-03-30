@@ -8,7 +8,9 @@
  * A non-dynamic, three-dimensional kernel, with floating point data.
  * A kernel is a 3D convolution matrix that describes a filtering algorithm
  * on a 3D dataset. The dimensions should be mxnxp, where m, n, and p
- * are odd numbers: m,n,p = 2k+1 for all k.
+ * are odd numbers: m,n,p = 2k+1 for all k. The major dimension is the Z
+ * dimension; that is, the data is stored as [Z][X][Y] (depth, width, height)
+ * and input data arrays are expected in this format.
  */
 public class Kernel {
     /** The floating point kernel, a 3D array */
@@ -36,7 +38,7 @@ public class Kernel {
         this.width = width;
         this.height = height;
         this.depth = depth;
-        kernel = new float[width][height][depth];
+        kernel = new float[depth][width][height]; // [Z][X][Y]
         // Default "identity" matrix (one in the middle, zero elsewhere)
         for (int i = 0; i < width; ++i)
             for (int j = 0; j < height; ++j)
@@ -67,7 +69,7 @@ public class Kernel {
      * @param value The value to set
      */
     public void set(int x, int y, int z, float value) {
-        kernel[x][y][z] = value;
+        kernel[z][x][y] = value;
     }
     /**
      * Get a component of the kernel at the specified position.
@@ -77,7 +79,7 @@ public class Kernel {
      * @return The specified component of the kernel
      */
     public float get(int x, int y, int z) {
-        return kernel[x][y][z];
+        return kernel[z][x][y];
     }
     /**
      * Normalize the kernel. Normalize ensures that the sum of the entire
@@ -159,9 +161,9 @@ public class Kernel {
             for (int i = 0; i < width; ++i) {
                 for (int j = 0; j < height; ++j) {
                     if (asBytes) {
-                        string += String.format("%4d,", (byte)(kernel[i][j][k]*127));
+                        string += String.format("%4d,", (byte)(kernel[k][i][j]*127));
                     } else {
-                        string += String.format("%5.3f, ", kernel[i][j][k]);
+                        string += String.format("%5.3f, ", kernel[k][i][j]);
                     }
                 }
                 string += String.format("\n");

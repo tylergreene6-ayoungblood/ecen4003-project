@@ -38,7 +38,7 @@ public final class KOps {
         // iterate through bands
         for (int b = 0; b < rasters.get(0).getBands(); ++b) {
             // iterate through kernel
-            for (int k = 0; k < kernel.getHeight(); ++k) {
+            for (int k = 0; k < kernel.getDepth(); ++k) {
                 for (int i = 0; i < kernel.getWidth(); ++i) {
                     for (int j = 0; j < kernel.getHeight(); ++j) {
                         int xi = x - hw + i;
@@ -46,6 +46,7 @@ public final class KOps {
                         int zi = z - hd + k;
                         if (zi < 0) zi = 0;
                         if (zi >= rasters.size()) zi = rasters.size()-1;
+                        //System.out.printf("i, j, k: %d, %d, %d; xi, yi, zi: %d, %d, %d\n", i, j, k, xi, yi, zi);
                         pixel.add(b, kernel.get(i, j, k) * rasters.get(zi).getPixelComponent(xi,yi,b));
                     }
                 }
@@ -100,6 +101,19 @@ public final class KOps {
                 for (int k = 0; k < kernel[0][0].length; ++k)
                     sum += kernel[i][j][k];
         return sum;
+    }
+    /**
+     * Print a float array nicely.
+     * @param data A two-dimensional array to be printed
+     */
+    public static void print(float[][] data) {
+        for (int i = 0; i < data.length; ++i) {
+            System.out.printf("[ ");
+            for (int j = 0; j < data[0].length; ++j) {
+                System.out.printf("%5.3f%s ", data[i][j], (j < data[0].length)?",":"");
+            }
+            System.out.printf("]\n");
+        }
     }
     /**
      * Load a kernel from JSON. GSON parses the JSON file into a JSONKernel

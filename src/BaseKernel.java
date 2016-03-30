@@ -6,10 +6,10 @@
 
 /**
  * A dynamic, with floating point data. Kernels are small rectangular
- * matrices describing an image filter. The dimensions should be mxn, where
- * both m and n are odd numbers: m,n = 2k+1 for all k.
+ * matrices describing an image filter. The dimensions should be mxnxp, where
+ * m, n, and p are odd numbers: m,n,p = 2k+1 for all k.
  * BaseKernel describes an image kernel as a function of space. By specifying
- * a point, BaseKernel can generate a static kernel (Kernel)
+ * a point, BaseKernel can generate a static kernel (of type Kernel).
  */
 public class BaseKernel extends Kernel {
     public String name;
@@ -21,12 +21,13 @@ public class BaseKernel extends Kernel {
         this.width = jKernel.width;
         this.height = jKernel.height;
         this.depth = jKernel.depth;
-        kernel = new float[width][height][depth];
+        kernel = new float[depth][width][height];
         this.name = jKernel.name;
-        for (int i = 0; i < this.width; ++i)
-            for (int j = 0; j < this.height; ++j)
-                for (int k = 0; k < this.depth; ++k)
-                    kernel[i][j][k] = jKernel.kernel[k][i][j] * jKernel.coeff;
+        System.out.printf("w: %d, h: %d, d: %d; jKernel: %dx%dx%d\n", width, height, depth, )
+        for (int k = 0; k < this.depth; ++k)
+            for (int i = 0; i < this.width; ++i)
+                for (int j = 0; j < this.height; ++j)
+                    kernel[k][i][j] = jKernel.kernel[k][i][j] * jKernel.coeff;
     }
     /**
      * Creates a BaseKernel from a path to a kernel in JSON format.

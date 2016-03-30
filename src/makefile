@@ -52,7 +52,7 @@ rebuild: clean build
 
 # run the project. We need to explicitly provide the path of the GSON library.
 run: build
-		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr $(BUILD_DIR)/datasets/timeseries/hw8_timeseries_2015-07-29T145000.DZ/
+		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr $(BUILD_DIR)/datasets/timeseries/mdb_render/
 
 # build the javadocs for the project
 docs:

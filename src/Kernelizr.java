@@ -44,7 +44,7 @@ public class Kernelizr {
         if (args.length >= 3) {
             kernelPath = args[2];
         } else {
-            kernelPath = "../test/kernels/gaussianblur_5x5x5.json";
+            kernelPath = "../test/kernels/gaussianblur_7x1x1.json";
             System.out.printf("WARN: No kernel path provided. Using default %s\n", kernelPath);
         }
         // Set processing parameters -------------------------------------------
@@ -68,7 +68,7 @@ public class Kernelizr {
         // Load the base kernel
         BaseKernel baseKernel = new BaseKernel(kernelPath);
         System.out.printf("Using kernel: %s, sum: %f\n",baseKernel.name,KOps.sum(baseKernel.getKernel()));
-
+        //baseKernel.to
         // Keep the input and output images in lists
         ArrayList<BadRaster> srcRasters = new ArrayList<BadRaster>();
         ArrayList<BadRaster> outRasters = new ArrayList<BadRaster>();
