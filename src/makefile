@@ -55,11 +55,22 @@ run: build
 		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr $(BUILD_DIR)/datasets/timeseries/mdb_render/
 
 # test target. Process a large timeseries dataset with explicit CLI args
-test: build
+test16: build
 		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr \
-		$(BUILD_DIR)/datasets/timeseries/hw8s_2015-07-29T145000.DZ/ \
+		$(BUILD_DIR)/datasets/hw8_4k/ \
 		$(BUILD_DIR)/output/ \
-		$(BUILD_DIR)/kernels/gaussianblur_7x7x1.json
+		$(BUILD_DIR)/kernels/sharpen_3x3x1.json \
+		16 \
+		512
+
+# single-threaded test target.
+test1: build
+		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr \
+		$(BUILD_DIR)/datasets/hw8_4k/ \
+		$(BUILD_DIR)/output/ \
+		$(BUILD_DIR)/kernels/sharpen_3x3x1.json \
+		1 \
+		512
 
 # build the javadocs for the project
 docs:
