@@ -54,6 +54,13 @@ rebuild: clean build
 run: build
 		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr $(BUILD_DIR)/datasets/timeseries/mdb_render/
 
+# test target. Process a large timeseries dataset with explicit CLI args
+test: build
+		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr \
+		$(BUILD_DIR)/datasets/timeseries/hw8s_2015-07-29T145000.DZ/ \
+		$(BUILD_DIR)/output/ \
+		$(BUILD_DIR)/kernels/gaussianblur_7x7x1.json
+
 # build the javadocs for the project
 docs:
 		javadoc -d $(DOCS_DIR)/javadoc -cp ".:libs/gson-2.6.2.jar" $(CLASSES)

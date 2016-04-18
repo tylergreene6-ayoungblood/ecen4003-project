@@ -24,15 +24,24 @@ public class Kernelizr {
      * - load a specified kernel, or use the default<br>
      * - start a thread pool for processing<br>
      * - save the images to a path<br>
+     * Command-line argument specification:<br>
+     * No arguments are required; arguments that are not passed will be set to
+     * program defaults. The first argument is the directory of input images,
+     * the second argument is the output path, the third argument is a path
+     * to a JSON kernel specification, and the fourth argument allows the user
+     * to override the number of processors used (default is number of cores).
+     * Finally, the fifth argument allows the user to override the blocksize.
      * @param args The command-line args for the main program.
      */
     public static void main(String[] args) {
-        // Start overall timer
+        // Start overall timers (total keeps track of entire program execution,
+        // convol keeps track of actual convolution time)
         final long totalStartTime = System.currentTimeMillis();
+        long convolTime = 0;
         // Argument parsing and validation -------------------------------------
         System.out.printf("\nHello, I'm Kernelizr, an image filter.\n");
-        // The first argument should be a path to an image file.
-        // If it is not, complain. Otherwise, try to open it
+        // The first argument should be a path to a directory of images.
+        // If it is not passed, warn and use the default.
         final String searchPath;
         if (args.length >= 1) {
             searchPath = args[0];
@@ -40,6 +49,8 @@ public class Kernelizr {
             searchPath = "../test/datasets/timeseries/hw8_timeseries_2015-07-29T145000.DZ/";
             System.out.printf("WARN: No timeseries path provided. Using default %s\n", searchPath);
         }
+        // The second argument should be a directory path.
+        // If it is not passed, warn and use the default.
         final String outputPath;
         if (args.length >= 2) {
             outputPath = args[1];
@@ -47,6 +58,8 @@ public class Kernelizr {
             outputPath = "../test/output/";
             System.out.printf("WARN: No output path provided. Using default %s\n", outputPath);
         }
+        // The third argument should be a kernel file path.
+        // If it is not passed, warn and use the default.
         final String kernelPath;
         if (args.length >= 3) {
             kernelPath = args[2];
@@ -54,12 +67,40 @@ public class Kernelizr {
             kernelPath = "../test/kernels/gaussianblur_1x1x7.json";
             System.out.printf("WARN: No kernel path provided. Using default %s\n", kernelPath);
         }
+        // Fourth argument allows thread count override
+        int nThreadsProposed;
+        if (args.length >= 4) {
+            try {
+                nThreadsProposed = Integer.parseInt(args[3]);
+            } catch (NumberFormatException e) {
+                nThreadsProposed = 1;
+                System.out.printf("WARN: Bad thread count proposed. Using default: %d\n", nThreadsProposed);
+            }
+            if (nThreadsProposed < 1) nThreadsProposed = 1;
+        } else {
+            nThreadsProposed = Runtime.getRuntime().availableProcessors();
+            System.out.printf("INFO: Detected %d processors, using this value for thread count.\n", nThreadsProposed);
+        }
+        // Fifth argument allows block size override
+        int blockSizeProposed;
+        if (args.length >= 5) {
+            try {
+                blockSizeProposed = Integer.parseInt(args[4]);
+            } catch (NumberFormatException e) {
+                blockSizeProposed = 32;
+                System.out.printf("WARN: Bad thread count proposed. Using default: %d\n", nThreadsProposed);
+            }
+            if (blockSizeProposed< 1) blockSizeProposed = 1;
+        } else {
+            blockSizeProposed = 32;
+            System.out.printf("INFO: Default value for block size is %d, using this value.\n",blockSizeProposed);
+        }
         // Set processing parameters -------------------------------------------
         // blockSize is the size in pixels of each block associated with a task
-        final int blockSize = 32;
+        final int blockSize = blockSizeProposed;
         // nThreads is the (supposedly optimal) number of threads to run in
-        // the thread pool. Determined by number of processors.
-        final int nThreads = Runtime.getRuntime().availableProcessors();
+        // the thread pool. Determined by number of processors or by argument
+        final int nThreads = nThreadsProposed;
 
         // Search for *.png files in the specified directory and add them to
         // the list of files we care about
@@ -156,6 +197,7 @@ public class Kernelizr {
             final long endTime = System.currentTimeMillis();
             final long elapsedTime = endTime - startTime;
             System.out.printf("Processed %d blocks in %f %s\n",nBlocks,(elapsedTime>1000)?elapsedTime/1000.0f:elapsedTime,(elapsedTime>1000)?"s":"ms");
+            convolTime += elapsedTime;
             // Save the destination raster to the destination filepath
             String outputFilePath = outputPath + srcRaster.getFilename();
             System.out.printf("Saving image to %s. Dimensions: %dx%d\n",outputFilePath,outRaster.getWidth(),outRaster.getHeight());
@@ -210,6 +252,7 @@ public class Kernelizr {
         System.out.printf("Kernel: %dx%dx%d, name: %s\n", baseKernel.getWidth(), baseKernel.getHeight(), baseKernel.getDepth(), baseKernel.name);
         System.out.printf("Process: %d threads, blocksize %d\n", nThreads, blockSize);
         System.out.printf("Total time: %f s; average frame time: %f ms \n",totalElapsedTime/1000.f,((float)(totalElapsedTime))/srcFiles.size());
+        System.out.printf("Convolution time: %f s; average frame time: %f ms \n",convolTime/1000.f,((float)(convolTime))/srcFiles.size());
         System.out.printf("Operations: %d total convolutions, %d convolutions/s\n", totalConvolutions, totalConvolutions/(totalElapsedTime/1000));
         System.out.printf("#### END profiling information #######################################\n");
     }
