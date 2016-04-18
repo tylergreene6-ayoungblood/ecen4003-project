@@ -57,7 +57,7 @@ run: build
 # test target. Process a large timeseries dataset with explicit CLI args
 test16: build
 		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr \
-		$(BUILD_DIR)/datasets/hw8_4k/ \
+		$(BUILD_DIR)/datasets/timeseries/hw8_4k/ \
 		$(BUILD_DIR)/output/ \
 		$(BUILD_DIR)/kernels/sharpen_3x3x1.json \
 		16 \
@@ -66,7 +66,7 @@ test16: build
 # single-threaded test target.
 test1: build
 		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr \
-		$(BUILD_DIR)/datasets/hw8_4k/ \
+		$(BUILD_DIR)/datasets/timeseries/hw8_4k/ \
 		$(BUILD_DIR)/output/ \
 		$(BUILD_DIR)/kernels/sharpen_3x3x1.json \
 		1 \
