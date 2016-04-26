@@ -25,7 +25,8 @@ CLASSES = \
 		TaskQueue.java \
 		KWorker.java \
 		JSONKernel.java \
-		Pixel.java
+		Pixel.java \
+		GaussianKernelFactory.java
 
 # help message by default
 .PHONY: default
