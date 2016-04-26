@@ -5,7 +5,7 @@
  */
 
 /**
- * A dynamic, with floating point data. Kernels are small rectangular
+ * A dynamic kernel, with floating point data. Kernels are small rectangular
  * matrices describing an image filter. The dimensions should be mxnxp, where
  * m, n, and p are odd numbers: m,n,p = 2k+1 for all k.
  * BaseKernel describes an image kernel as a function of space. By specifying
