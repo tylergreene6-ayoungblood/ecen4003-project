@@ -20,7 +20,7 @@ public final class GaussianKernelFactory {
     /**
      * Creates a one-dimensional gaussian kernel with a given theta and size.
      * @param theta The theta value for the gaussian distribution
-     * @param size The length of the kernel. Should be an odd number > 1.
+     * @param size The length of the kernel. Should be an odd number &gt; 1.
      * @return An array containing the calculated kernel.
      */
     public static double[] get1D(double theta, int size) {
@@ -33,7 +33,7 @@ public final class GaussianKernelFactory {
     /**
      * Creates a two-dimensional gaussian kernel with a given theta and size.
      * @param theta The theta value for the gaussian distribution
-     * @param size The square size of the kernel. Should be an odd number > 1.
+     * @param size The square size of the kernel. Should be an odd number &gt; 1.
      * @return An array containing the calculated kernel.
      */
     public static double[][] get2D(double theta, int size) {
@@ -48,7 +48,7 @@ public final class GaussianKernelFactory {
     /**
      * Creates a three-dimensional gaussian kernel with a given theta and size.
      * @param theta The theta value for the gaussian distribution
-     * @param size The cubic size of the kernel. Should be an odd number > 1.
+     * @param size The cubic size of the kernel. Should be an odd number &gt; 1.
      * @return An array containing the calculated kernel.
      */
     public static double[][][] get3D(double theta, int size) {
