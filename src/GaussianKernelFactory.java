@@ -63,6 +63,47 @@ public final class GaussianKernelFactory {
         return g;
     }
     /**
+     * Creates a three-dimensional gaussian kernel with a given theta and size.
+     * Returns data as floats
+     * @param theta The theta value for the gaussian distribution
+     * @param size The cubic size of the kernel. Should be an odd number &gt; 1.
+     * @return An array containing the calculated kernel.
+     */
+    public static float[][][] get3DFloat(double theta, int size) {
+        float[][][] g = new float[size][size][size];
+        for (int i = 0; i < size; ++i) {
+            for (int j = 0; j < size; ++j) {
+                for (int k = 0; k < size; ++k) {
+                    g[i][j][k] = (float)getDiscrete3D(theta,i-(size/2),j-(size/2),k-(size/2));
+                }
+            }
+        }
+        return g;
+    }
+    /**
+     * Creates a three-dimensional gaussian kernel with a given theta and
+     * width, height, depth. Returns data as floats.
+     * @param theta The theta value for the guassian distribution
+     * @param w The width of the kernel (primary dimension).
+     * Should be an odd number &gt; 1.
+     * @param h The width of the kernel (secondary dimension).
+     * Should be an odd number &gt; 1.
+     * @param d The width of the kernel (tertiary dimension).
+     * Should be an odd number &gt; 1.
+     * @return An array containing the calculated kernel.
+     */
+    public static float[][][] get3DFloat(double theta, int w, int h, int d) {
+        float[][][] g = new float[w][h][d];
+        for (int i = 0; i < w; ++i) {
+            for (int j = 0; j < h; ++j) {
+                for (int k = 0; k < d; ++k) {
+                    g[i][j][k] = (float)getDiscrete3D(theta,i-(w/2),j-(h/2),k-(d/2));
+                }
+            }
+        }
+        return g;
+    }
+    /**
      * Calculate a discrete value of a single point in a 1D distribution.
      * @param theta The theta value for the gaussian distribution
      * @param x The point at which to calculate a discrete value.

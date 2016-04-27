@@ -170,7 +170,15 @@ public class Kernelizr {
                     task.setOutputRaster(outRaster);
                     //Kernel kernel = baseKernel.getModulatedKernel(point);
                     //task.setKernel(kernel);
-                    task.setKernel(baseKernel);
+                    //task.setKernel(baseKernel);
+                    // !! Overriding normal kernel behaviour for demo !!
+                    // Written under duress, take out later
+                    double dist = (Math.pow(i-xBlocks/2,2) + Math.pow(j-yBlocks/2,2))/(xBlocks/2 * yBlocks/2);
+                    // System.out.printf("Creating new block at (%d,%d), dist: %f\n",i-xBlocks/2,j-yBlocks/2,dist);
+                    Kernel kernel = new Kernel(11,11,11);
+                    kernel.setKernel(GaussianKernelFactory.get3DFloat(4*dist+0.1,11));
+                    kernel.normalize();
+                    task.setKernel(kernel);
                     totalConvolutions += (blockSize*blockSize*baseKernel.getWidth()*baseKernel.getHeight()*baseKernel.getDepth());
                     tasks.push(task);
                     //System.out.println("Pushed task: " + task.getRegionString() + " w/ modulation: [" + point[0] + "," + point[1] + "]");

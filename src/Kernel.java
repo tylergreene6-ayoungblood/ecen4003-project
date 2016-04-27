@@ -43,8 +43,8 @@ public class Kernel {
         for (int i = 0; i < width; ++i)
             for (int j = 0; j < height; ++j)
                 for (int k = 0; k < depth; ++k)
-                    kernel[i][j][k] = 0.0f;
-        kernel[(int)Math.floor(width/2.0f)][(int)Math.floor(height/2.0f)][(int)Math.floor(depth/2.0f)] = 1.0f;
+                    kernel[k][i][j] = 0.0f;
+        kernel[(int)Math.floor(depth/2.0f)][(int)Math.floor(width/2.0f)][(int)Math.floor(height/2.0f)] = 1.0f;
     }
     /**
      * Set new values for the kernel from a 3D array.
@@ -91,7 +91,7 @@ public class Kernel {
         double sum = KOps.sum(kernel);
         for (int i = 0; i < width; ++i)
             for (int j = 0; j < height; ++j)
-                for (int k = 0; k < depth; ++j)
+                for (int k = 0; k < depth; ++k)
                     kernel[i][j][k] = (float)(kernel[i][j][k]/sum);
     }
     /**

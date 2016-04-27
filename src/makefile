@@ -73,6 +73,15 @@ test1: build
 		1 \
 		512
 
+# vignette test target
+testvig: build
+		java -cp "$(BUILD_DIR)/:libs/gson-2.6.2.jar" Kernelizr \
+		~/Downloads/tmp/new/render4/images \
+		~/Downloads/output/ \
+		$(BUILD_DIR)/kernels/gaussianblur_11x11x11.json \
+		2 \
+		16
+
 # build the javadocs for the project
 docs:
 		javadoc -d $(DOCS_DIR)/javadoc -cp ".:libs/gson-2.6.2.jar" $(CLASSES)
